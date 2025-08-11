@@ -1,0 +1,154 @@
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
+import Quickshell
+import Quickshell.Widgets
+import "../theme"
+import "../components"
+import "../services"
+
+Item {
+    id: root
+    implicitWidth: parent.height
+    implicitHeight: parent.height
+
+    property bool expanded: false
+    property int expandedIndex: -1
+    property var currentNetwork: {
+        for (let i = 0; i < nm.networks.length; ++i) {
+            if (nm.networks[i].inUse)
+                return nm.networks[i];
+        }
+        return null;
+    }
+    onExpandedChanged: if (expanded)
+        nm.scan()
+
+    NetworkManager {
+        id: nm
+    }
+
+    IconImage {
+        id: icon
+        anchors.centerIn: parent
+        anchors.fill: parent
+        anchors.margins: 4
+        implicitSize: 24
+        source: Quickshell.iconPath(root.currentNetwork ? root.currentNetwork.icon : "network-wireless-offline-symbolic", "network-wireless-offline-symbolic")
+    }
+
+    GenericTooltip {
+        anchors.centerIn: parent
+        anchors.fill: parent
+        background: Theme.crust
+        canEnterTooltip: true
+
+        tooltipContent: Rectangle {
+            implicitWidth: 200
+            implicitHeight: 200
+            color: "transparent"
+            ColumnLayout {
+                spacing: 8
+                anchors.fill: parent
+
+                MouseArea {
+                    id: headerArea
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 32
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.expanded = !root.expanded
+
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: 8
+                        IconImage {
+                            source: Quickshell.iconPath(root.currentNetwork ? root.currentNetwork.icon : "network-wireless-offline-symbolic", "network-wireless-offline-symbolic")
+                            implicitSize: 16
+                        }
+                        Text {
+                            text: root.currentNetwork ? root.currentNetwork.ssid : `State: ${nm.managerState}`
+                            color: Theme.text
+                            Layout.fillWidth: true
+                        }
+                        IconImage {
+                            source: Quickshell.iconPath(root.expanded ? "pan-up-symbolic" : "pan-down-symbolic", root.expanded ? "pan-up-symbolic" : "pan-down-symbolic")
+                            implicitSize: 16
+                        }
+                    }
+                }
+
+                ListView {
+                    id: networksList
+                    visible: root.expanded
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: Math.min(contentHeight, 200)
+                    model: nm.networks
+                    clip: true
+                    delegate: Item {
+                        required property var modelData
+                        width: networksList.width
+                        height: contentColumn.implicitHeight
+
+                        ColumnLayout {
+                            id: contentColumn
+                            anchors.fill: parent
+                            spacing: 4
+
+                            RowLayout {
+                                id: headerRow
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 32
+                                spacing: 8
+                                IconImage {
+                                    source: Quickshell.iconPath(modelData.icon, "network-wireless-signal-none-symbolic")
+                                    implicitSize: 16
+                                }
+                                Text {
+                                    text: modelData.ssid
+                                    color: modelData.inUse ? Theme.green : Theme.text
+                                    Layout.fillWidth: true
+                                }
+                            }
+
+                            RowLayout {
+                                id: actionRow
+                                visible: root.expandedIndex === index
+                                Layout.fillWidth: true
+                                spacing: 8
+                                TextField {
+                                    id: pwField
+                                    visible: !modelData.inUse && modelData.security.toLowerCase() !== "open"
+                                    Layout.fillWidth: true
+                                    placeholderText: "Password"
+                                    echoMode: TextInput.Password
+                                }
+                                Button {
+                                    text: modelData.inUse ? "Disconnect" : "Connect"
+                                    onClicked: {
+                                        if (modelData.inUse) {
+                                            nm.disconnect(modelData.ssid);
+                                        } else {
+                                            if (modelData.security.toLowerCase() === "open")
+                                                nm.connectOpen(modelData.ssid);
+                                            else
+                                                nm.connectPsk(modelData.ssid, pwField.text);
+                                        }
+                                        root.expandedIndex = -1;
+                                    }
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: headerRow
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.expandedIndex = root.expandedIndex === index ? -1 : index;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

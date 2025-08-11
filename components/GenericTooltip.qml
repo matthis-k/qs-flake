@@ -63,8 +63,8 @@ Item {
                 anchor.rect.y: root.parent.height + root.margin
                 anchor.rect.x: -(implicitWidth / 2) + (root.parent.width / 2)
 
-                implicitWidth: content.implicitWidth
-                implicitHeight: content.implicitHeight
+                width: content.implicitWidth
+                height: content.implicitHeight
                 color: "transparent"
 
                 Rectangle {
@@ -75,8 +75,8 @@ Item {
                     border.color: root.borderColor
                     border.width: root.borderColor && 2 || 0
 
-                    implicitWidth: contentLoader.item.implicitWidth + 2 * root.margin
-                    implicitHeight: contentLoader.item.implicitHeight + 2 * root.margin
+                    implicitWidth: Math.max(contentLoader.item.implicitWidth, contentLoader.item.width) + 2 * root.margin
+                    implicitHeight: Math.max(contentLoader.item.implicitHeight, contentLoader.item.height) + 2 * root.margin
 
                     Rectangle {
                         anchors.fill: parent

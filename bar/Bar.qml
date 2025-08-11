@@ -47,6 +47,7 @@ PanelWindow {
             anchors.bottom: parent.bottom
             Pill {
                 Layout.fillHeight: true
+                NetworkWidget {}
                 BatteryWidget {}
             }
         }
