@@ -82,12 +82,16 @@ Item {
                         anchors.fill: parent
                         anchors.margins: root.margin
                         color: "transparent"
-                        MouseArea {
+                        HoverHandler {
                             id: popupArea
-                            anchors.fill: parent
-                            hoverEnabled: root.canEnterTooltip
-                            onEntered: root.open(root.openDelay)
-                            onExited: root.close(root.closeDelay)
+                            target: parent
+                            onHoveredChanged: {
+                                if (popupArea.hovered) {
+                                    root.open(root.openDelay);
+                                } else {
+                                    root.close(root.closeDelay);
+                                }
+                            }
                         }
 
                         Loader {
