@@ -262,8 +262,6 @@ Item {
     function _run(argv, cb) {
         runner._cb = cb;
         runner.command = argv;
-        runner.stdout.text = "";
-        runner.stderr.text = "";
         runner.running = true;
     }
 
@@ -285,6 +283,16 @@ Item {
                     const bssid = nmcliUnescape(parts[2]);
                     const security = nmcliUnescape(parts[3]) || "open";
                     const strength = Number(parts[4]) || 0;
+                    const freqRaw = nmcliUnescape(parts[5] || "");
+                    let freqMHz = 0;
+                    if (freqRaw) {
+                        const m = freqRaw.match(/([\d.]+)/);
+                        if (m) {
+                            const val = Number(m[1]);
+                            freqMHz = /ghz/i.test(freqRaw) ? Math.round(val * 1000) : Math.round(val);
+                        }
+                    }
+                    const band = freqMHz >= 5925 ? "6GHz" : (freqMHz >= 4900 ? "5GHz" : (freqMHz > 0 ? "2.4GHz" : ""));
                     const icon = _iconFor({
                         security,
                         strength
@@ -295,16 +303,17 @@ Item {
                         security,
                         strength,
                         inUse,
-                        icon
+                        icon,
+                        band
                     });
                 }
-                items.sort((a, b) => a.ssid === b.ssid ? b.strength - a.strength : a.ssid.localeCompare(b.ssid));
+                items.sort((a, b) => a.strength === b.strength ? a.ssid.localeCompare(b.ssid) : b.strength - a.strength);
                 nm.networks = items;
             }
         }
     }
     function _listWifi() {
-        listProc.command = ["nmcli", "-t", "--escape", "yes", "-f", "IN-USE,SSID,BSSID,SECURITY,SIGNAL", "device", "wifi", "list", "--rescan", "no"];
+        listProc.command = ["nmcli", "-t", "--escape", "yes", "-f", "IN-USE,SSID,BSSID,SECURITY,SIGNAL,FREQ", "device", "wifi", "list", "--rescan", "no"];
         listProc.running = true;
     }
 

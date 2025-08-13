@@ -13,7 +13,7 @@ Item {
     implicitHeight: parent.height
 
     property bool expanded: false
-    property int expandedIndex: -1
+    property string expandedBssid: ""
     property var currentNetwork: {
         for (let i = 0; i < nm.networks.length; ++i) {
             if (nm.networks[i].inUse)
@@ -48,32 +48,41 @@ Item {
             implicitHeight: 200
             color: "transparent"
             ColumnLayout {
-                spacing: 8
-                anchors.fill: parent
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.left: parent.left
 
-                MouseArea {
+                RowLayout {
                     id: headerArea
+                    spacing: 8
                     Layout.fillWidth: true
                     Layout.preferredHeight: 32
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.expanded = !root.expanded
+                    IconImage {
+                        source: Quickshell.iconPath(root.currentNetwork ? root.currentNetwork.icon : "network-wireless-offline-symbolic", "network-wireless-offline-symbolic")
+                        implicitSize: 16
+                    }
+                    Text {
+                        text: root.currentNetwork ? root.currentNetwork.ssid : `State: ${nm.managerState}`
+                        color: Theme.text
+                        Layout.fillWidth: true
+                    }
+                }
 
-                    RowLayout {
-                        anchors.fill: parent
-                        spacing: 8
-                        IconImage {
-                            source: Quickshell.iconPath(root.currentNetwork ? root.currentNetwork.icon : "network-wireless-offline-symbolic", "network-wireless-offline-symbolic")
-                            implicitSize: 16
-                        }
-                        Text {
-                            text: root.currentNetwork ? root.currentNetwork.ssid : `State: ${nm.managerState}`
-                            color: Theme.text
-                            Layout.fillWidth: true
-                        }
-                        IconImage {
-                            source: Quickshell.iconPath(root.expanded ? "pan-up-symbolic" : "pan-down-symbolic", root.expanded ? "pan-up-symbolic" : "pan-down-symbolic")
-                            implicitSize: 16
-                        }
+                RowLayout {
+                    spacing: 8
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 32
+                    Text {
+                        text: root.expanded ? "Show less" : "Show more"
+                        color: Theme.text
+                        Layout.fillWidth: true
+                    }
+                    IconImage {
+                        source: Quickshell.iconPath(root.expanded ? "pan-up-symbolic" : "pan-down-symbolic", root.expanded ? "pan-up-symbolic" : "pan-down-symbolic")
+                        implicitSize: 16
+                    }
+                    TapHandler {
+                        onSingleTapped: root.expanded = !root.expanded
                     }
                 }
 
@@ -108,11 +117,25 @@ Item {
                                     color: modelData.inUse ? Theme.green : Theme.text
                                     Layout.fillWidth: true
                                 }
+                                Text {
+                                    visible: modelData.band != "2.4GHz"
+                                    Layout.alignment: Qt.AlignRight
+                                    text: modelData.band
+                                    color: modelData.inUse ? Theme.green : Theme.subtext0
+                                    Layout.fillWidth: true
+                                }
                             }
 
+                            TapHandler {
+                                target: actionRow
+                                onSingleTapped: {
+                                    console.log("tapped");
+                                    root.expandedBssid = root.expandedBssid === modelData.bssid ? "" : modelData.bssid;
+                                }
+                            }
                             RowLayout {
                                 id: actionRow
-                                visible: root.expandedIndex === index
+                                visible: root.expandedBssid === modelData.bssid
                                 Layout.fillWidth: true
                                 spacing: 8
                                 TextField {
@@ -133,16 +156,8 @@ Item {
                                             else
                                                 nm.connectPsk(modelData.ssid, pwField.text);
                                         }
-                                        root.expandedIndex = -1;
+                                        root.expandedBssid = "";
                                     }
-                                }
-                            }
-
-                            MouseArea {
-                                anchors.fill: headerRow
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    root.expandedIndex = root.expandedIndex === index ? -1 : index;
                                 }
                             }
                         }

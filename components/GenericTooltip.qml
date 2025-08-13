@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
@@ -63,9 +64,14 @@ Item {
                 anchor.rect.y: root.parent.height + root.margin
                 anchor.rect.x: -(implicitWidth / 2) + (root.parent.width / 2)
 
-                width: content.implicitWidth
-                height: content.implicitHeight
+                implicitWidth: content.implicitWidth
+                implicitHeight: content.implicitHeight
                 color: "transparent"
+
+                HyprlandFocusGrab {
+                    id: grab
+                    windows: [tooltipWindow]
+                }
 
                 Rectangle {
                     id: content
@@ -87,8 +93,10 @@ Item {
                             target: parent
                             onHoveredChanged: {
                                 if (popupArea.hovered) {
+                                    grab.active = true;
                                     root.open(root.openDelay);
                                 } else {
+                                    grab.active = false;
                                     root.close(root.closeDelay);
                                 }
                             }
