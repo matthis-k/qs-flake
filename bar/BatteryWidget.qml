@@ -29,10 +29,42 @@ Item {
 
         tooltipContent: ColumnLayout {
             spacing: 0
-            Text {
-                text: `Battery status: ${Math.floor(root.bat.percentage * 100)}%`
-                color: Theme.text
-                font.pixelSize: 24
+            RowLayout {
+                Layout.fillWidth: true
+                Text {
+                    text: `Battery status:`
+                    color: Theme.text
+                    font.pixelSize: 24
+                }
+                Text {
+                    text: `${Math.floor(root.bat.percentage * 100)}%`
+                    color: {
+                        let percentage = Math.floor(root.bat.percentage * 100);
+                        return [
+                            {
+                                max: 10,
+                                col: Theme.red
+                            },
+                            {
+                                max: 20,
+                                col: Theme.yellow
+                            },
+                            {
+                                max: 60,
+                                col: Theme.text
+                            },
+                            {
+                                max: 100,
+                                col: Theme.green
+                            }
+                        ].find(({
+                                max,
+                                col
+                            }) => percentage <= max).col;
+                    }
+                    font.pixelSize: 24
+                    font.bold: true
+                }
             }
             Text {
                 visible: root.bat.state == UPowerDeviceState.Charging
