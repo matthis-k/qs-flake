@@ -88,6 +88,115 @@ Item {
         }
     }
 
+    // Reusable view for displaying and controlling an audio sink
+    component AudioSinkItem: Item {
+        id: sinkItem
+        required property var sink
+        required property real maxVol
+        readonly property bool hasSink: !!sink && !!sink.audio
+        width: parent ? parent.width : implicitWidth
+        height: row.implicitHeight
+
+        function pct(v) {
+            return Math.round((v ?? 0) * 100);
+        }
+        function volumeIcon(vol, muted) {
+            if (muted || (vol ?? 0) <= 0.001)
+                return "audio-volume-muted-symbolic";
+            const p = (vol ?? 0);
+            if (p < 0.34)
+                return "audio-volume-low-symbolic";
+            if (p < 0.67)
+                return "audio-volume-medium-symbolic";
+            return "audio-volume-high-symbolic";
+        }
+        function overlayColor(vol, muted) {
+            if (muted)
+                return Theme.red;
+            if ((vol ?? 0) === 0.0)
+                return Theme.peach;
+            return Theme.text;
+        }
+        function clampVol(v) {
+            return Math.max(0.0, Math.min(sinkItem.maxVol, v));
+        }
+        function wheelDeltaToStep(event) {
+            const notches = (event.angleDelta?.y ?? 0) / 120;
+            const step = (event.modifiers & Qt.ShiftModifier) ? 0.05 : 0.02;
+            return notches * step;
+        }
+        function adjust(event) {
+            if (!sinkItem.hasSink)
+                return;
+            sinkItem.sink.audio.volume = clampVol(sinkItem.sink.audio.volume + wheelDeltaToStep(event));
+        }
+
+        RowLayout {
+            id: row
+            anchors.fill: parent
+            spacing: 10
+
+            ColorOverlay {
+                implicitWidth: 32
+                implicitHeight: 32
+                color: overlayColor(sinkItem.sink?.audio?.volume, sinkItem.sink?.audio?.muted)
+                source: IconImage {
+                    anchors.centerIn: parent
+                    implicitSize: 32
+                    source: Quickshell.iconPath(volumeIcon(sinkItem.sink?.audio?.volume, sinkItem.sink?.audio?.muted), "multimedia-volume-control")
+                }
+                TapHandler {
+                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad | PointerDevice.Stylus
+                    gesturePolicy: TapHandler.ReleaseWithinBounds
+                    onTapped: if (sinkItem.hasSink)
+                        sinkItem.sink.audio.muted = !sinkItem.sink.audio.muted
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+                    Text {
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignLeft
+                        elide: Text.ElideRight
+                        color: Theme.text
+                        text: sinkItem.hasSink ? `${sinkItem.sink.nickname || sinkItem.sink.description || "Output"}` : "No output device"
+                    }
+                    Text {
+                        Layout.alignment: Qt.AlignRight
+                        color: Theme.subtext0
+                        text: sinkItem.hasSink ? `${pct(sinkItem.sink.audio.volume)}%` : "--%"
+                        width: 56
+                        horizontalAlignment: Text.AlignRight
+                    }
+                }
+
+                Slider {
+                    id: slider
+                    Layout.fillWidth: true
+                    from: 0.0
+                    to: sinkItem.maxVol
+                    stepSize: 0
+                    value: sinkItem.hasSink ? sinkItem.sink.audio.volume : 0
+                    onMoved: if (sinkItem.hasSink)
+                        sinkItem.sink.audio.volume = value
+                }
+            }
+
+            WheelHandler {
+                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                onWheel: {
+                    adjust(event);
+                    event.accepted = true;
+                }
+            }
+        }
+    }
+
     ColorOverlay {
         anchors.centerIn: parent
         anchors.fill: parent
@@ -118,70 +227,26 @@ Item {
             spacing: 10
 
             RowLayout {
-                id: masterRow
                 Layout.fillWidth: true
-                Layout.leftMargin: 4
-                spacing: 10
-
-                ColorOverlay {
-                    implicitWidth: 32
-                    implicitHeight: 32
-                    color: overlayColor(root.sink?.audio?.volume, root.sink?.audio?.muted)
-                    source: IconImage {
-                        anchors.centerIn: parent
-                        implicitSize: 32
-                        source: Quickshell.iconPath(volumeIcon(root.sink?.audio?.volume, root.sink?.audio?.muted), "multimedia-volume-control")
-                    }
-                    TapHandler {
-                        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad | PointerDevice.Stylus
-                        gesturePolicy: TapHandler.ReleaseWithinBounds
-                        onTapped: if (root.hasSink)
-                            root.sink.audio.muted = !root.sink.audio.muted
-                    }
-                }
-
-                ColumnLayout {
+                spacing: 8
+                Text {
                     Layout.fillWidth: true
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
-
-                        Text {
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignLeft
-                            elide: Text.ElideRight
-                            color: Theme.text
-                            text: root.hasSink ? `${root.sink.nickname || root.sink.description || "Output"}` : "No output device"
-                        }
-                        Text {
-                            Layout.alignment: Qt.AlignRight
-                            color: Theme.subtext0
-                            text: root.hasSink ? `${pct(root.sink.audio.volume)}%` : "--%"
-                            width: 56
-                            horizontalAlignment: Text.AlignRight
-                        }
-                    }
-
-                    Slider {
-                        id: masterSlider
-                        Layout.fillWidth: true
-                        from: 0.0
-                        to: root.maxVol
-                        stepSize: 0
-                        value: root.hasSink ? root.sink.audio.volume : 0
-                        onMoved: if (root.hasSink)
-                            root.sink.audio.volume = value
-                    }
+                    color: Theme.text
+                    font.pixelSize: 24
+                    text: "Output:"
                 }
-
-                WheelHandler {
-                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-                    onWheel: {
-                        adjustMaster(event);
-                        event.accepted = true;
-                    }
+                Text {
+                    color: overlayColor(root.sink?.audio?.volume, root.sink?.audio?.muted)
+                    font.pixelSize: 24
+                    font.bold: true
+                    text: root.hasSink ? `${pct(root.sink.audio.volume)}%` : "--%"
                 }
+            }
+
+            AudioSinkItem {
+                sink: root.sink
+                maxVol: root.maxVol
+                Layout.fillWidth: true
             }
 
             ColumnLayout {
