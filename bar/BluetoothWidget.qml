@@ -71,19 +71,19 @@ Item {
                 RowLayout {
                     spacing: 8
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 32
-
-                    IconImage {
-                        source: Quickshell.iconPath(btIconName(), "bluetooth-symbolic")
-                        implicitSize: 16
+                    Text {
+                        text: "Bluetooth:"
+                        color: Theme.text
+                        font.pixelSize: 24
                     }
-
                     Text {
                         Layout.fillWidth: true
-                        color: Theme.text
-                        text: adapter ? `${adapter.name || adapter.adapterId} — ${adapterStateStr}` : "Bluetooth: Unavailable"
+                        color: btOn ? Theme.blue : Theme.red
+                        font.pixelSize: 24
+                        font.bold: true
+                        text: adapter ? adapterStateStr : "Unavailable"
+                        elide: Text.ElideRight
                     }
-
                     Switch {
                         visible: !!adapter
                         checked: adapter && adapter.enabled
