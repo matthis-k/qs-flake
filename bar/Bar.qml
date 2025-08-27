@@ -47,6 +47,8 @@ PanelWindow {
             anchors.bottom: parent.bottom
             Pill {
                 Layout.fillHeight: true
+                VolumeWidget {}
+                BluetoothWidget {}
                 NetworkWidget {}
                 BatteryWidget {}
             }

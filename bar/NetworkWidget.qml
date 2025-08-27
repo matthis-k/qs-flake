@@ -45,9 +45,10 @@ Item {
 
         tooltipContent: Rectangle {
             implicitWidth: 200
-            implicitHeight: 200
+            implicitHeight: col.implicitHeight
             color: "transparent"
             ColumnLayout {
+                id: col
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.left: parent.left
@@ -144,9 +145,45 @@ Item {
                                     Layout.fillWidth: true
                                     placeholderText: "Password"
                                     echoMode: TextInput.Password
+                                    color: Theme.text
+                                    placeholderTextColor: Theme.overlay1
+                                    selectionColor: Theme.surface2
+                                    selectedTextColor: Theme.text
+                                    leftPadding: 4 + Theme.rounded * 8
+                                    rightPadding: 4 + Theme.rounded * 8
+                                    topPadding: 4 + Theme.rounded * 4
+                                    bottomPadding: 4 + Theme.rounded * 4
+                                    background: Rectangle {
+                                        id: bg
+                                        radius: Theme.rounded ? 8 : 0
+                                        color: Theme.base
+                                        border.width: pwField.activeFocus ? 2 : 1
+                                        border.color: pwField.activeFocus ? Theme.lavender : (pwField.hovered ? Theme.overlay1 : Theme.overlay0)
+                                    }
                                 }
                                 Button {
+                                    id: connectBtn
                                     text: modelData.inUse ? "Disconnect" : "Connect"
+                                    leftPadding: 8 + Theme.rounded * 8
+                                    rightPadding: 8 + Theme.rounded * 8
+                                    topPadding: 4 + Theme.rounded * 4
+                                    bottomPadding: 4 + Theme.rounded * 4
+                                    contentItem: Text {
+                                        text: connectBtn.text
+                                        font.bold: true
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                        elide: Text.ElideRight
+                                        color: Theme.text
+                                    }
+                                    background: Rectangle {
+                                        radius: Theme.rounded ? 8 : 0
+                                        color: connectBtn.hovered ? Theme.surface0 : Theme.base
+                                        border.width: 1
+                                        border.color: connectBtn.down ? Theme.blue       
+                                        : (connectBtn.hovered ? Theme.overlay1 
+                                            : Theme.overlay0)
+                                    }
                                     onClicked: {
                                         if (modelData.inUse) {
                                             nm.disconnect(modelData.ssid);

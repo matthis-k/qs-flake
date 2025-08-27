@@ -12,13 +12,43 @@ Item {
     property UPowerDevice bat: UPower.displayDevice
     implicitWidth: parent.height
     implicitHeight: parent.height
-    IconImage {
-        id: icon
-        anchors.centerIn: parent
+
+    property color stateColor: {
+        let percentage = Math.floor(root.bat.percentage * 100);
+        return [
+            {
+                max: 10,
+                col: Theme.red
+            },
+            {
+                max: 20,
+                col: Theme.yellow
+            },
+            {
+                max: 60,
+                col: Theme.text
+            },
+            {
+                max: 100,
+                col: Theme.green
+            }
+        ].find(({
+                max,
+                col
+            }) => percentage <= max).col;
+    }
+
+    ColorOverlay {
+        id: powerProfileIcon
+        color: root.stateColor
         anchors.fill: parent
-        anchors.margins: 4
-        implicitSize: 24
-        source: Quickshell.iconPath(root.bat.iconName, "battery-full")
+        source: IconImage {
+            id: icon
+            anchors.centerIn: parent
+            anchors.fill: parent
+            implicitSize: 24
+            source: Quickshell.iconPath(root.bat.iconName, "battery-full")
+        }
     }
 
     GenericTooltip {
@@ -38,30 +68,7 @@ Item {
                 }
                 Text {
                     text: `${Math.floor(root.bat.percentage * 100)}%`
-                    color: {
-                        let percentage = Math.floor(root.bat.percentage * 100);
-                        return [
-                            {
-                                max: 10,
-                                col: Theme.red
-                            },
-                            {
-                                max: 20,
-                                col: Theme.yellow
-                            },
-                            {
-                                max: 60,
-                                col: Theme.text
-                            },
-                            {
-                                max: 100,
-                                col: Theme.green
-                            }
-                        ].find(({
-                                max,
-                                col
-                            }) => percentage <= max).col;
-                    }
+                    color: root.stateColor
                     font.pixelSize: 24
                     font.bold: true
                 }
