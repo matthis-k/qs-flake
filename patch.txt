@@ -1,0 +1,755 @@
+diff --git a/bar/BluetoothWidget.qml b/bar/BluetoothWidget.qml
+index 404f89abf88f6948cf981d37961e445f745d91ce..c1b2f51d444b19be745efdddf25dc7cb21a35189 100644
+--- a/bar/BluetoothWidget.qml
++++ b/bar/BluetoothWidget.qml
+@@ -1,47 +1,46 @@
+ import QtQuick
+ import QtQuick.Layouts
+ import QtQuick.Controls
+ import Quickshell
+ import Quickshell.Widgets
+ import Quickshell.Bluetooth
+ import Qt5Compat.GraphicalEffects
+ import "../theme"
+ import "../components"
+ 
+ Item {
+     id: root
+     implicitWidth: parent?.height ?? 24
+     implicitHeight: parent?.height ?? 24
+ 
+     property bool expanded: false
+     property string expandedAddr: ""
+ 
+     readonly property var adapter: Bluetooth.defaultAdapter
+     readonly property bool btOn: !!adapter && adapter.enabled
+     readonly property int connectedCount: adapter ? adapter.devices.values.length : 0
+-    readonly property string adapterStateStr: adapter ? BluetoothAdapterState.toString(adapter.state) : "Unavailable"
+ 
+     function btIconName() {
+         if (!adapter)
+             return "bluetooth-disabled-symbolic";
+         if (adapter.state === BluetoothAdapterState.Blocked)
+             return "bluetooth-disabled-symbolic";
+         if (!adapter.enabled || adapter.state === BluetoothAdapterState.Disabled)
+             return "bluetooth-disabled-symbolic";
+         if (connectedCount > 0)
+             return "bluetooth-connected-symbolic";
+         if (adapter.discovering)
+             return "bluetooth-searching-symbolic";
+         return "bluetooth-symbolic";
+     }
+ 
+     ColorOverlay {
+         id: btOverlay
+         anchors.centerIn: parent
+         anchors.fill: parent
+         color: btOn ? Theme.blue : Theme.red
+ 
+         source: IconImage {
+             anchors.fill: parent
+             anchors.margins: 4
+             implicitSize: 24
+@@ -49,66 +48,75 @@ Item {
+             opacity: btOn ? 1.0 : 0.7
+         }
+     }
+ 
+     GenericTooltip {
+         anchors.centerIn: parent
+         anchors.fill: parent
+         background: Theme.crust
+         canEnterTooltip: true
+ 
+         tooltipContent: Rectangle {
+             implicitWidth: 260
+             implicitHeight: col.implicitHeight
+             color: "transparent"
+ 
+             ColumnLayout {
+                 id: col
+                 anchors.top: parent.top
+                 anchors.right: parent.right
+                 anchors.left: parent.left
+                 spacing: 6
+ 
+                 RowLayout {
+                     spacing: 8
+                     Layout.fillWidth: true
+-                    Layout.preferredHeight: 32
+-
+-                    IconImage {
+-                        source: Quickshell.iconPath(btIconName(), "bluetooth-symbolic")
+-                        implicitSize: 16
+-                    }
+-
+                     Text {
+-                        Layout.fillWidth: true
++                        text: "Bluetooth:"
+                         color: Theme.text
+-                        text: adapter ? `${adapter.name || adapter.adapterId} — ${adapterStateStr}` : "Bluetooth: Unavailable"
++                        font.pixelSize: 24
++                        Layout.fillWidth: true
+                     }
+-
+                     Switch {
+                         visible: !!adapter
+                         checked: adapter && adapter.enabled
++                        indicator: Rectangle {
++                            implicitWidth: 36
++                            implicitHeight: 20
++                            radius: height / 2
++                            color: control.checked ? Theme.blue : Theme.surface0
++                            border.width: 1
++                            border.color: control.checked ? Theme.blue : Theme.overlay0
++                            Rectangle {
++                                width: 18
++                                height: 18
++                                radius: height / 2
++                                x: control.checked ? parent.width - width - 1 : 1
++                                y: 1
++                                color: Theme.base
++                            }
++                        }
+                         onToggled: if (adapter)
+                             adapter.enabled = checked
+                     }
+                 }
+ 
+                 RowLayout {
+                     visible: !!adapter
+                     spacing: 8
+                     Layout.fillWidth: true
+                     Layout.preferredHeight: 24
+ 
+                     Text {
+                         color: Theme.subtext0
+                         text: adapter ? `Discovering: ${adapter.discovering ? "yes" : "no"} · Discoverable: ${adapter.discoverable ? "yes" : "no"}` : ""
+                         Layout.fillWidth: true
+                     }
+ 
+                     Button {
+                         visible: !!adapter
+                         text: root.expanded ? "Show less" : "Show more"
+                         background: Rectangle {
+                             radius: Theme.rounded ? 8 : 0
+                             color: Theme.base
+                             border.width: 1
+                             border.color: hovered ? Theme.overlay1 : Theme.overlay0
+diff --git a/bar/NetworkWidget.qml b/bar/NetworkWidget.qml
+index 768ba7e906739dfda1ad877a34dfe9b73d79126a..98eae453836f4e747e30be2f2eeeac9d8aab49bf 100644
+--- a/bar/NetworkWidget.qml
++++ b/bar/NetworkWidget.qml
+@@ -1,206 +1,223 @@
+ import QtQuick
+ import QtQuick.Layouts
+ import QtQuick.Controls
+ import Quickshell
+ import Quickshell.Widgets
+ import "../theme"
+ import "../components"
+ import "../services"
+ 
+ Item {
+     id: root
+     implicitWidth: parent.height
+     implicitHeight: parent.height
+ 
+     property bool expanded: false
+-    property string expandedBssid: ""
+     property var currentNetwork: {
+         for (let i = 0; i < nm.networks.length; ++i) {
+             if (nm.networks[i].inUse)
+                 return nm.networks[i];
+         }
+         return null;
+     }
+     onExpandedChanged: if (expanded)
+         nm.scan()
+ 
+     NetworkManager {
+         id: nm
+     }
+ 
++    // Reusable entry for a network with optional actions
++    component NetworkItem: Item {
++        id: networkItem
++        required property var network
++        required property var nm
++        property bool expanded: false
++        width: parent ? parent.width : implicitWidth
++        height: col.implicitHeight
++
++        ColumnLayout {
++            id: col
++            anchors.fill: parent
++            spacing: 4
++
++            RowLayout {
++                id: headerRow
++                Layout.fillWidth: true
++                Layout.preferredHeight: 32
++                spacing: 8
++                IconImage {
++                    source: Quickshell.iconPath(networkItem.network.icon, "network-wireless-signal-none-symbolic")
++                    implicitSize: 16
++                }
++                Text {
++                    text: networkItem.network.ssid
++                    color: networkItem.network.inUse ? Theme.green : Theme.text
++                    Layout.fillWidth: true
++                }
++                ColorOverlay {
++                    visible: networkItem.network.band !== "2.4GHz"
++                    Layout.alignment: Qt.AlignRight
++                    implicitWidth: 16
++                    implicitHeight: 16
++                    color: networkItem.network.inUse ? Theme.green : Theme.subtext0
++                    source: IconImage {
++                        implicitSize: 16
++                        source: Quickshell.iconPath("network-wireless-5g-symbolic", "network-wireless-5g-symbolic")
++                    }
++                }
++            }
++
++            TapHandler {
++                target: headerRow
++                onSingleTapped: networkItem.expanded = !networkItem.expanded
++            }
++
++            RowLayout {
++                id: actionRow
++                visible: networkItem.expanded
++                Layout.fillWidth: true
++                spacing: 8
++                TextField {
++                    id: pwField
++                    visible: !networkItem.network.inUse && networkItem.network.security.toLowerCase() !== "open"
++                    Layout.fillWidth: true
++                    placeholderText: "Password"
++                    echoMode: TextInput.Password
++                    color: Theme.text
++                    placeholderTextColor: Theme.overlay1
++                    selectionColor: Theme.surface2
++                    selectedTextColor: Theme.text
++                    leftPadding: 4 + Theme.rounded * 8
++                    rightPadding: 4 + Theme.rounded * 8
++                    topPadding: 4 + Theme.rounded * 4
++                    bottomPadding: 4 + Theme.rounded * 4
++                    background: Rectangle {
++                        radius: Theme.rounded ? 8 : 0
++                        color: Theme.base
++                        border.width: pwField.activeFocus ? 2 : 1
++                        border.color: pwField.activeFocus ? Theme.lavender : (pwField.hovered ? Theme.overlay1 : Theme.overlay0)
++                    }
++                }
++                Button {
++                    id: connectBtn
++                    text: networkItem.network.inUse ? "Disconnect" : "Connect"
++                    leftPadding: 8 + Theme.rounded * 8
++                    rightPadding: 8 + Theme.rounded * 8
++                    topPadding: 4 + Theme.rounded * 4
++                    bottomPadding: 4 + Theme.rounded * 4
++                    contentItem: Text {
++                        text: connectBtn.text
++                        font.bold: true
++                        horizontalAlignment: Text.AlignHCenter
++                        verticalAlignment: Text.AlignVCenter
++                        elide: Text.ElideRight
++                        color: Theme.text
++                    }
++                    background: Rectangle {
++                        radius: Theme.rounded ? 8 : 0
++                        color: connectBtn.hovered ? Theme.surface0 : Theme.base
++                        border.width: 1
++                        border.color: connectBtn.down ? Theme.blue : (connectBtn.hovered ? Theme.overlay1 : Theme.overlay0)
++                    }
++                    onClicked: {
++                        if (networkItem.network.inUse) {
++                            networkItem.nm.disconnect(networkItem.network.ssid);
++                        } else {
++                            if (networkItem.network.security.toLowerCase() === "open")
++                                networkItem.nm.connectOpen(networkItem.network.ssid);
++                            else
++                                networkItem.nm.connectPsk(networkItem.network.ssid, pwField.text);
++                        }
++                        networkItem.expanded = false;
++                    }
++                }
++            }
++        }
++    }
++
+     IconImage {
+         id: icon
+         anchors.centerIn: parent
+         anchors.fill: parent
+         anchors.margins: 4
+         implicitSize: 24
+         source: Quickshell.iconPath(root.currentNetwork ? root.currentNetwork.icon : "network-wireless-offline-symbolic", "network-wireless-offline-symbolic")
+     }
+ 
+     GenericTooltip {
+         anchors.centerIn: parent
+         anchors.fill: parent
+         background: Theme.crust
+         canEnterTooltip: true
+ 
+         tooltipContent: Rectangle {
+             implicitWidth: 200
+             implicitHeight: col.implicitHeight
+             color: "transparent"
++
+             ColumnLayout {
+                 id: col
+                 anchors.top: parent.top
+                 anchors.right: parent.right
+                 anchors.left: parent.left
+ 
+                 RowLayout {
+-                    id: headerArea
+                     spacing: 8
+                     Layout.fillWidth: true
+-                    Layout.preferredHeight: 32
+-                    IconImage {
+-                        source: Quickshell.iconPath(root.currentNetwork ? root.currentNetwork.icon : "network-wireless-offline-symbolic", "network-wireless-offline-symbolic")
+-                        implicitSize: 16
+-                    }
+                     Text {
+-                        text: root.currentNetwork ? root.currentNetwork.ssid : `State: ${nm.managerState}`
++                        text: "Network:"
+                         color: Theme.text
++                        font.pixelSize: 24
++                    }
++                    Text {
++                        text: root.currentNetwork ? "Connected" : nm.managerState
++                        color: root.currentNetwork ? Theme.green : Theme.red
++                        font.pixelSize: 24
++                        font.bold: true
+                         Layout.fillWidth: true
++                        elide: Text.ElideRight
+                     }
+                 }
+ 
++                NetworkItem {
++                    visible: !!root.currentNetwork
++                    network: root.currentNetwork
++                    nm: nm
++                }
++
+                 RowLayout {
+                     spacing: 8
+                     Layout.fillWidth: true
+                     Layout.preferredHeight: 32
+                     Text {
+                         text: root.expanded ? "Show less" : "Show more"
+                         color: Theme.text
+                         Layout.fillWidth: true
+                     }
+                     IconImage {
+                         source: Quickshell.iconPath(root.expanded ? "pan-up-symbolic" : "pan-down-symbolic", root.expanded ? "pan-up-symbolic" : "pan-down-symbolic")
+                         implicitSize: 16
+                     }
+                     TapHandler {
+                         onSingleTapped: root.expanded = !root.expanded
+                     }
+                 }
+ 
+                 ListView {
+                     id: networksList
+                     visible: root.expanded
+                     Layout.fillWidth: true
+                     Layout.preferredHeight: Math.min(contentHeight, 200)
+                     model: nm.networks
+                     clip: true
+-                    delegate: Item {
+-                        required property var modelData
++                    delegate: NetworkItem {
+                         width: networksList.width
+-                        height: contentColumn.implicitHeight
+-
+-                        ColumnLayout {
+-                            id: contentColumn
+-                            anchors.fill: parent
+-                            spacing: 4
+-
+-                            RowLayout {
+-                                id: headerRow
+-                                Layout.fillWidth: true
+-                                Layout.preferredHeight: 32
+-                                spacing: 8
+-                                IconImage {
+-                                    source: Quickshell.iconPath(modelData.icon, "network-wireless-signal-none-symbolic")
+-                                    implicitSize: 16
+-                                }
+-                                Text {
+-                                    text: modelData.ssid
+-                                    color: modelData.inUse ? Theme.green : Theme.text
+-                                    Layout.fillWidth: true
+-                                }
+-                                Text {
+-                                    visible: modelData.band != "2.4GHz"
+-                                    Layout.alignment: Qt.AlignRight
+-                                    text: modelData.band
+-                                    color: modelData.inUse ? Theme.green : Theme.subtext0
+-                                    Layout.fillWidth: true
+-                                }
+-                            }
+-
+-                            TapHandler {
+-                                target: actionRow
+-                                onSingleTapped: {
+-                                    console.log("tapped");
+-                                    root.expandedBssid = root.expandedBssid === modelData.bssid ? "" : modelData.bssid;
+-                                }
+-                            }
+-                            RowLayout {
+-                                id: actionRow
+-                                visible: root.expandedBssid === modelData.bssid
+-                                Layout.fillWidth: true
+-                                spacing: 8
+-                                TextField {
+-                                    id: pwField
+-                                    visible: !modelData.inUse && modelData.security.toLowerCase() !== "open"
+-                                    Layout.fillWidth: true
+-                                    placeholderText: "Password"
+-                                    echoMode: TextInput.Password
+-                                    color: Theme.text
+-                                    placeholderTextColor: Theme.overlay1
+-                                    selectionColor: Theme.surface2
+-                                    selectedTextColor: Theme.text
+-                                    leftPadding: 4 + Theme.rounded * 8
+-                                    rightPadding: 4 + Theme.rounded * 8
+-                                    topPadding: 4 + Theme.rounded * 4
+-                                    bottomPadding: 4 + Theme.rounded * 4
+-                                    background: Rectangle {
+-                                        id: bg
+-                                        radius: Theme.rounded ? 8 : 0
+-                                        color: Theme.base
+-                                        border.width: pwField.activeFocus ? 2 : 1
+-                                        border.color: pwField.activeFocus ? Theme.lavender : (pwField.hovered ? Theme.overlay1 : Theme.overlay0)
+-                                    }
+-                                }
+-                                Button {
+-                                    id: connectBtn
+-                                    text: modelData.inUse ? "Disconnect" : "Connect"
+-                                    leftPadding: 8 + Theme.rounded * 8
+-                                    rightPadding: 8 + Theme.rounded * 8
+-                                    topPadding: 4 + Theme.rounded * 4
+-                                    bottomPadding: 4 + Theme.rounded * 4
+-                                    contentItem: Text {
+-                                        text: connectBtn.text
+-                                        font.bold: true
+-                                        horizontalAlignment: Text.AlignHCenter
+-                                        verticalAlignment: Text.AlignVCenter
+-                                        elide: Text.ElideRight
+-                                        color: Theme.text
+-                                    }
+-                                    background: Rectangle {
+-                                        radius: Theme.rounded ? 8 : 0
+-                                        color: connectBtn.hovered ? Theme.surface0 : Theme.base
+-                                        border.width: 1
+-                                        border.color: connectBtn.down ? Theme.blue       
+-                                        : (connectBtn.hovered ? Theme.overlay1 
+-                                            : Theme.overlay0)
+-                                    }
+-                                    onClicked: {
+-                                        if (modelData.inUse) {
+-                                            nm.disconnect(modelData.ssid);
+-                                        } else {
+-                                            if (modelData.security.toLowerCase() === "open")
+-                                                nm.connectOpen(modelData.ssid);
+-                                            else
+-                                                nm.connectPsk(modelData.ssid, pwField.text);
+-                                        }
+-                                        root.expandedBssid = "";
+-                                    }
+-                                }
+-                            }
+-                        }
++                        network: modelData
++                        nm: nm
+                     }
+                 }
+             }
+         }
+     }
+ }
+diff --git a/bar/VolumeWidget.qml b/bar/VolumeWidget.qml
+index 3da28e0a39a04f09ab90ba3d99af12d8288da6ed..83caa3febc4a18bc3d32a041702ecd9f615be286 100644
+--- a/bar/VolumeWidget.qml
++++ b/bar/VolumeWidget.qml
+@@ -66,146 +66,212 @@ Item {
+         return (s.description || p["node.description"] || p["media.name"] || s.nickname || p["node.nick"] || p["application.name"] || s.description || s.name || "Application");
+     }
+ 
+     PwNodeLinkTracker {
+         id: sinkLinks
+         node: root.sink
+     }
+ 
+     PwObjectTracker {
+         id: binder
+         objects: {
+             const objs = [];
+             if (root.sink)
+                 objs.push(root.sink);
+             for (let i = 0; i < sinkLinks.linkGroups.length; ++i) {
+                 const lg = sinkLinks.linkGroups[i];
+                 if (lg?.source)
+                     objs.push(lg.source);
+                 if (lg?.target)
+                     objs.push(lg.target);
+             }
+             return objs;
+         }
+     }
+ 
++    // Reusable view for displaying and controlling an audio sink
++    component AudioSinkItem: Item {
++        id: sinkItem
++        required property var sink
++        required property real maxVol
++        readonly property bool hasSink: !!sink && !!sink.audio
++        width: parent ? parent.width : implicitWidth
++        height: row.implicitHeight
++
++        function pct(v) {
++            return Math.round((v ?? 0) * 100);
++        }
++        function volumeIcon(vol, muted) {
++            if (muted || (vol ?? 0) <= 0.001)
++                return "audio-volume-muted-symbolic";
++            const p = (vol ?? 0);
++            if (p < 0.34)
++                return "audio-volume-low-symbolic";
++            if (p < 0.67)
++                return "audio-volume-medium-symbolic";
++            return "audio-volume-high-symbolic";
++        }
++        function overlayColor(vol, muted) {
++            if (muted)
++                return Theme.red;
++            if ((vol ?? 0) === 0.0)
++                return Theme.peach;
++            return Theme.text;
++        }
++        function clampVol(v) {
++            return Math.max(0.0, Math.min(sinkItem.maxVol, v));
++        }
++        function wheelDeltaToStep(event) {
++            const notches = (event.angleDelta?.y ?? 0) / 120;
++            const step = (event.modifiers & Qt.ShiftModifier) ? 0.05 : 0.02;
++            return notches * step;
++        }
++        function adjust(event) {
++            if (!sinkItem.hasSink)
++                return;
++            sinkItem.sink.audio.volume = clampVol(sinkItem.sink.audio.volume + wheelDeltaToStep(event));
++        }
++
++        RowLayout {
++            id: row
++            anchors.fill: parent
++            spacing: 10
++
++            ColorOverlay {
++                implicitWidth: 32
++                implicitHeight: 32
++                color: overlayColor(sinkItem.sink?.audio?.volume, sinkItem.sink?.audio?.muted)
++                source: IconImage {
++                    anchors.centerIn: parent
++                    implicitSize: 32
++                    source: Quickshell.iconPath(volumeIcon(sinkItem.sink?.audio?.volume, sinkItem.sink?.audio?.muted), "multimedia-volume-control")
++                }
++                TapHandler {
++                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad | PointerDevice.Stylus
++                    gesturePolicy: TapHandler.ReleaseWithinBounds
++                    onTapped: if (sinkItem.hasSink)
++                        sinkItem.sink.audio.muted = !sinkItem.sink.audio.muted
++                }
++            }
++
++            ColumnLayout {
++                Layout.fillWidth: true
++
++                RowLayout {
++                    Layout.fillWidth: true
++                    spacing: 8
++                    Text {
++                        Layout.fillWidth: true
++                        Layout.alignment: Qt.AlignLeft
++                        elide: Text.ElideRight
++                        color: Theme.text
++                        text: sinkItem.hasSink ? `${sinkItem.sink.nickname || sinkItem.sink.description || "Output"}` : "No output device"
++                    }
++                    Text {
++                        Layout.alignment: Qt.AlignRight
++                        color: Theme.subtext0
++                        text: sinkItem.hasSink ? `${pct(sinkItem.sink.audio.volume)}%` : "--%"
++                        width: 56
++                        horizontalAlignment: Text.AlignRight
++                    }
++                }
++
++                Slider {
++                    id: slider
++                    Layout.fillWidth: true
++                    from: 0.0
++                    to: sinkItem.maxVol
++                    stepSize: 0
++                    value: sinkItem.hasSink ? sinkItem.sink.audio.volume : 0
++                    onMoved: if (sinkItem.hasSink)
++                        sinkItem.sink.audio.volume = value
++                }
++            }
++
++            WheelHandler {
++                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
++                onWheel: {
++                    adjust(event);
++                    event.accepted = true;
++                }
++            }
++        }
++    }
++
+     ColorOverlay {
+         anchors.centerIn: parent
+         anchors.fill: parent
+         color: overlayColor(root.sink?.audio?.volume, root.sink?.audio?.muted)
+         source: IconImage {
+             anchors.fill: parent
+             anchors.margins: 4
+             implicitSize: 24
+             source: Quickshell.iconPath(volumeIcon(root.sink?.audio?.volume, root.sink?.audio?.muted), "multimedia-volume-control")
+             opacity: root.hasSink ? 1.0 : 0.7
+         }
+     }
+     WheelHandler {
+         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+         onWheel: {
+             adjustMaster(event);
+             event.accepted = true;
+         }
+     }
+ 
+     GenericTooltip {
+         anchors.centerIn: parent
+         anchors.fill: parent
+         background: Theme.crust
+         canEnterTooltip: true
+ 
+         tooltipContent: ColumnLayout {
+             spacing: 10
++            implicitWidth: 300
+ 
+             RowLayout {
+-                id: masterRow
+                 Layout.fillWidth: true
+-                Layout.leftMargin: 4
+-                spacing: 10
+-
+-                ColorOverlay {
+-                    implicitWidth: 32
+-                    implicitHeight: 32
+-                    color: overlayColor(root.sink?.audio?.volume, root.sink?.audio?.muted)
+-                    source: IconImage {
+-                        anchors.centerIn: parent
+-                        implicitSize: 32
+-                        source: Quickshell.iconPath(volumeIcon(root.sink?.audio?.volume, root.sink?.audio?.muted), "multimedia-volume-control")
+-                    }
+-                    TapHandler {
+-                        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad | PointerDevice.Stylus
+-                        gesturePolicy: TapHandler.ReleaseWithinBounds
+-                        onTapped: if (root.hasSink)
+-                            root.sink.audio.muted = !root.sink.audio.muted
+-                    }
+-                }
+-
+-                ColumnLayout {
++                spacing: 8
++                Text {
+                     Layout.fillWidth: true
+-
+-                    RowLayout {
+-                        Layout.fillWidth: true
+-                        spacing: 8
+-
+-                        Text {
+-                            Layout.fillWidth: true
+-                            Layout.alignment: Qt.AlignLeft
+-                            elide: Text.ElideRight
+-                            color: Theme.text
+-                            text: root.hasSink ? `${root.sink.nickname || root.sink.description || "Output"}` : "No output device"
+-                        }
+-                        Text {
+-                            Layout.alignment: Qt.AlignRight
+-                            color: Theme.subtext0
+-                            text: root.hasSink ? `${pct(root.sink.audio.volume)}%` : "--%"
+-                            width: 56
+-                            horizontalAlignment: Text.AlignRight
+-                        }
+-                    }
+-
+-                    Slider {
+-                        id: masterSlider
+-                        Layout.fillWidth: true
+-                        from: 0.0
+-                        to: root.maxVol
+-                        stepSize: 0
+-                        value: root.hasSink ? root.sink.audio.volume : 0
+-                        onMoved: if (root.hasSink)
+-                            root.sink.audio.volume = value
+-                    }
++                    color: Theme.text
++                    font.pixelSize: 24
++                    text: "Output:"
+                 }
+-
+-                WheelHandler {
+-                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+-                    onWheel: {
+-                        adjustMaster(event);
+-                        event.accepted = true;
+-                    }
++                Text {
++                    color: overlayColor(root.sink?.audio?.volume, root.sink?.audio?.muted)
++                    font.pixelSize: 24
++                    font.bold: true
++                    text: root.hasSink ? `${pct(root.sink.audio.volume)}%` : "--%"
+                 }
+             }
+ 
++            AudioSinkItem {
++                sink: root.sink
++                maxVol: root.maxVol
++                Layout.fillWidth: true
++            }
++
+             ColumnLayout {
+                 Layout.fillWidth: true
+                 spacing: 6
+ 
+                 Text {
+                     color: Theme.subtext1
+                     text: "Apps"
+                     font.bold: true
+                 }
+ 
+                 ListView {
+                     id: appList
+                     visible: root.hasSink
+                     Layout.fillWidth: true
+                     Layout.preferredHeight: Math.min(280, contentHeight)
+                     clip: true
+                     spacing: 6
+                     model: sinkLinks.linkGroups
+ 
+                     delegate: Item {
+                         required property var modelData
+                         width: appList.width
+                         height: row.implicitHeight
+ 
+                         readonly property var stream: modelData?.source
+

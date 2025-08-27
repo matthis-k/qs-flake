@@ -19,7 +19,6 @@ Item {
     readonly property var adapter: Bluetooth.defaultAdapter
     readonly property bool btOn: !!adapter && adapter.enabled
     readonly property int connectedCount: adapter ? adapter.devices.values.length : 0
-    readonly property string adapterStateStr: adapter ? BluetoothAdapterState.toString(adapter.state) : "Unavailable"
 
     function btIconName() {
         if (!adapter)
@@ -71,22 +70,31 @@ Item {
                 RowLayout {
                     spacing: 8
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 32
-
-                    IconImage {
-                        source: Quickshell.iconPath(btIconName(), "bluetooth-symbolic")
-                        implicitSize: 16
-                    }
-
                     Text {
-                        Layout.fillWidth: true
+                        text: "Bluetooth:"
                         color: Theme.text
-                        text: adapter ? `${adapter.name || adapter.adapterId} — ${adapterStateStr}` : "Bluetooth: Unavailable"
+                        font.pixelSize: 24
+                        Layout.fillWidth: true
                     }
-
                     Switch {
                         visible: !!adapter
                         checked: adapter && adapter.enabled
+                        indicator: Rectangle {
+                            implicitWidth: 36
+                            implicitHeight: 20
+                            radius: height / 2
+                            color: control.checked ? Theme.blue : Theme.surface0
+                            border.width: 1
+                            border.color: control.checked ? Theme.blue : Theme.overlay0
+                            Rectangle {
+                                width: 18
+                                height: 18
+                                radius: height / 2
+                                x: control.checked ? parent.width - width - 1 : 1
+                                y: 1
+                                color: Theme.base
+                            }
+                        }
                         onToggled: if (adapter)
                             adapter.enabled = checked
                     }
