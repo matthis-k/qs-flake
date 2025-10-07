@@ -21,6 +21,112 @@ Item {
         }
         return null;
     }
+
+component NetworkItem: ColumnLayout {
+    id: contentColumn
+    spacing: 4
+    // ---- properties/signals belong to the root object ----
+    required property var network               // expects { ssid, icon, inUse, band, bssid, security }
+    property string expandedBssid: ""
+    signal requestToggle(string bssid)
+    signal requestDisconnect(string ssid)
+    signal requestConnectOpen(string ssid)
+    signal requestConnectPsk(string ssid, string password)
+
+    RowLayout {
+        id: headerRow
+        Layout.fillWidth: true
+        Layout.preferredHeight: 32
+        spacing: 8
+
+        IconImage {
+            source: Quickshell.iconPath(network?.icon, "network-wireless-signal-none-symbolic")
+            width: 16; height: 16
+        }
+        Text {
+            text: network?.ssid ?? ""
+            color: network?.inUse ? Theme.green : Theme.text
+            Layout.fillWidth: true
+            elide: Text.ElideRight
+        }
+        Text {
+            visible: !!network?.band && network.band !== "2.4GHz"
+            Layout.alignment: Qt.AlignRight
+            text: network?.band ?? ""
+            color: network?.inUse ? Theme.green : Theme.subtext0
+        }
+    }
+
+    TapHandler {
+        target: headerRow
+        onSingleTapped: requestToggle(network?.bssid ?? "")
+    }
+
+    RowLayout {
+        id: actionRow
+        visible: expandedBssid === (network?.bssid ?? "")
+        Layout.fillWidth: true
+        spacing: 8
+
+        TextField {
+            id: pwField
+            visible: !network?.inUse && (network?.security ?? "").toLowerCase() !== "open"
+            Layout.fillWidth: true
+            placeholderText: "Password"
+            echoMode: TextInput.Password
+            color: Theme.text
+            placeholderTextColor: Theme.overlay1
+            selectionColor: Theme.surface2
+            selectedTextColor: Theme.text
+            leftPadding: 4 + Theme.rounded * 8
+            rightPadding: 4 + Theme.rounded * 8
+            topPadding: 4 + Theme.rounded * 4
+            bottomPadding: 4 + Theme.rounded * 4
+            background: Rectangle {
+                radius: Theme.rounded ? 8 : 0
+                color: Theme.base
+                border.width: pwField.activeFocus ? 2 : 1
+                border.color: pwField.activeFocus ? Theme.lavender
+                                : (pwField.hovered ? Theme.overlay1 : Theme.overlay0)
+            }
+        }
+
+        Button {
+            id: connectBtn
+            text: network?.inUse ? "Disconnect" : "Connect"
+            leftPadding: 8 + Theme.rounded * 8
+            rightPadding: 8 + Theme.rounded * 8
+            topPadding: 4 + Theme.rounded * 4
+            bottomPadding: 4 + Theme.rounded * 4
+
+            contentItem: Text {
+                text: connectBtn.text
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
+                color: Theme.text
+            }
+            background: Rectangle {
+                radius: Theme.rounded ? 8 : 0
+                color: connectBtn.hovered ? Theme.surface0 : Theme.base
+                border.width: 1
+                border.color: connectBtn.down ? Theme.blue
+                                : (connectBtn.hovered ? Theme.overlay1 : Theme.overlay0)
+            }
+            onClicked: {
+                if (network?.inUse) {
+                    requestDisconnect(network.ssid)
+                } else {
+                    const sec = (network?.security ?? "").toLowerCase()
+                    if (sec === "open") requestConnectOpen(network.ssid)
+                    else requestConnectPsk(network.ssid, pwField.text)
+                }
+            }
+        }
+    }
+}
+
     onExpandedChanged: if (expanded)
         nm.scan()
 
@@ -130,7 +236,6 @@ Item {
                             TapHandler {
                                 target: actionRow
                                 onSingleTapped: {
-                                    console.log("tapped");
                                     root.expandedBssid = root.expandedBssid === modelData.bssid ? "" : modelData.bssid;
                                 }
                             }
@@ -180,9 +285,7 @@ Item {
                                         radius: Theme.rounded ? 8 : 0
                                         color: connectBtn.hovered ? Theme.surface0 : Theme.base
                                         border.width: 1
-                                        border.color: connectBtn.down ? Theme.blue       
-                                        : (connectBtn.hovered ? Theme.overlay1 
-                                            : Theme.overlay0)
+                                        border.color: connectBtn.down ? Theme.blue : (connectBtn.hovered ? Theme.overlay1 : Theme.overlay0)
                                     }
                                     onClicked: {
                                         if (modelData.inUse) {

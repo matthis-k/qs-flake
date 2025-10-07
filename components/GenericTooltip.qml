@@ -17,6 +17,7 @@ Item {
     property bool visibleCond: true
     property color background: Theme.crust
     property var borderColor: Theme.blue
+    property var popupWidth
 
     function open(timeout = 0) {
         loader.active = true;
@@ -64,7 +65,7 @@ Item {
                 anchor.rect.y: root.parent.height + root.margin
                 anchor.rect.x: -(implicitWidth / 2) + (root.parent.width / 2)
 
-                implicitWidth: content.implicitWidth
+                implicitWidth: root.popupWidth || content.implicitWidth
                 implicitHeight: content.implicitHeight
                 color: "transparent"
 

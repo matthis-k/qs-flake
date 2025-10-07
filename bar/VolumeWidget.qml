@@ -113,6 +113,7 @@ Item {
         anchors.fill: parent
         background: Theme.crust
         canEnterTooltip: true
+        popupWidth: 300
 
         tooltipContent: ColumnLayout {
             spacing: 10
