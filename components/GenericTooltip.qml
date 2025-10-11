@@ -78,7 +78,7 @@ Item {
                     id: content
                     anchors.fill: parent
                     color: root.background
-                    radius: Theme.roudned * 2 * root.margin
+                    radius: Theme.rounded * 2 * root.margin
                     border.color: root.borderColor
                     border.width: root.borderColor && 2 || 0
 

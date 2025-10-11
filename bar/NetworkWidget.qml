@@ -25,7 +25,6 @@ Item {
 component NetworkItem: ColumnLayout {
     id: contentColumn
     spacing: 4
-    // ---- properties/signals belong to the root object ----
     required property var network               // expects { ssid, icon, inUse, band, bssid, security }
     property string expandedBssid: ""
     signal requestToggle(string bssid)

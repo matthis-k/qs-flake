@@ -4,15 +4,13 @@ import Quickshell.Io
 
 Item {
     id: nm
-    // ---- Public state ----
     property var networks: []               // [{ssid,bssid,security,strength,inUse,icon}]
     property var active: []                 // [{name,uuid,device,icon}]
     property string managerState: ""       // connected|connecting|disconnected|...
     property bool busy: false
     property string lastError: ""
-    property bool monitorEnabled: true      // live updates via `nmcli monitor`
+    property bool monitorEnabled: true
 
-    // ---- Public API ----
     function refresh() {
         _listWifi();
         _readState();
@@ -28,7 +26,7 @@ Item {
     function connectPsk(ssid, password) {
         connect(ssid, password);
     }
-    function connect(ssid, password) {               // open or WPA/WPA2/3-PSK
+    function connect(ssid, password) {
         if (!ssid) {
             lastError = "ssid required";
             return;
@@ -46,7 +44,7 @@ Item {
         });
     }
 
-    function connectBssid(ssid, password, bssid) {   // prefer specific AP
+    function connectBssid(ssid, password, bssid) {
         if (!ssid || !bssid) {
             lastError = "ssid+bssid required";
             return;
@@ -179,7 +177,6 @@ Item {
         });
     }
 
-    // ---- Live updates via nmcli monitor -> debounce -> refresh() ----
     Timer {
         id: monitorDebounce
         interval: 600
@@ -196,7 +193,6 @@ Item {
         }
     }
 
-    // ---- Helpers ----
     function nmcliSplit(line) {
         const out = [];
         let cur = "";
@@ -235,7 +231,6 @@ Item {
         return `network-wireless${lock ? /* "-secure" */ "" : ""}-signal-${bartext}-symbolic`;
     }
 
-    // ---- One‑shot command runner ----
     Process {
         id: runner
         property var _cb: null
@@ -265,7 +260,6 @@ Item {
         runner.running = true;
     }
 
-    // ---- Wi‑Fi list / state / active ----
     Process {
         id: listProc
         stdout: StdioCollector {

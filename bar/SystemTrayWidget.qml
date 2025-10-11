@@ -1,9 +1,9 @@
-// TrayPill.qml
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
+import Qt5Compat.GraphicalEffects
 import "../components"
 import "../theme"
 
@@ -16,11 +16,16 @@ Pill {
     header: Item {
         implicitHeight: 28
         implicitWidth: implicitHeight
-        Text {
+        ColorOverlay {
             anchors.centerIn: parent
-            text: pill.expanded ? ">" : "<"
-            font.pixelSize: Math.round(parent.height * 0.6)
+            anchors.fill: parent
             color: Theme.text
+            source: IconImage {
+                anchors.fill: parent
+                anchors.margins: 4
+                implicitSize: 24
+                source: Quickshell.iconPath(pill.expanded ? "pan-end" : "pan-start")
+            }
         }
         MouseArea {
             anchors.fill: parent
@@ -30,10 +35,11 @@ Pill {
 
     Repeater {
         id: rep
-        model: pill.expanded ? SystemTray.items : null 
+        model: pill.expanded ? SystemTray.items : null
 
+        // this is where the passing happends, rest is essentially an expander
         delegate: Item {
-            required property var modelData       // SystemTrayItem
+            required property var modelData
             readonly property var tray: modelData
 
             Layout.preferredWidth: 24
@@ -47,16 +53,14 @@ Pill {
                 mipmap: true
             }
 
-            QsMenuAnchor {
+            ThemedDbusMenuOpener {
                 id: menuAnchor
-                anchor.item: parent
                 menu: tray.menu
             }
 
             TapHandler {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                 onTapped: (point, button) => {
-                    console.log("asdfasdf")
                     if (button === Qt.LeftButton) {
                         if (tray.onlyMenu && tray.hasMenu)
                             menuAnchor.open();
