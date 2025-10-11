@@ -45,8 +45,12 @@ PanelWindow {
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.bottom: parent.bottom
+
             Pill {
                 Layout.fillHeight: true
+                SystemTrayWidget {
+                    Layout.fillHeight: true
+                }
                 VolumeWidget {}
                 BluetoothWidget {}
                 NetworkWidget {}
