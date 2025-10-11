@@ -73,13 +73,24 @@ RowLayout {
                     implicitWidth: root.height
                     implicitHeight: root.height
                     color: "transparent"
+
+                    property string appId: toplevel.wayland?.appId || ""
+                    property var entry: null
+                    function refreshEntry() { entry = DesktopEntries.heuristicLookup(appId) }
+
+                    Component.onCompleted: refreshEntry()
+                    onAppIdChanged: refreshEntry()
+                    Connections {
+                        target: DesktopEntries
+                        function onApplicationsChanged() { windowIconDelegate.refreshEntry() }
+                    }
                     IconImage {
                         id: windowIcon
                         implicitSize: root.height - 8
                         asynchronous: true
-                        source: Quickshell.iconPath(DesktopEntries.heuristicLookup(windowIconDelegate.toplevel.wayland?.appId || "")?.icon || "dialog-warning", "dialog-warning")
+                        mipmap: true
                         anchors.centerIn: parent
-
+                        source: Quickshell.iconPath(windowIconDelegate.entry?.icon || "dialog-warning", "dialog-warning")
                         Rectangle {
                             property real h: Math.max(2, root.height / 16)
                             anchors {
@@ -89,7 +100,10 @@ RowLayout {
                             height: h
                             width: parent.width
                             color: Theme.green
-                            visible: Hyprland.activeToplevel && windowIconDelegate.toplevel && Hyprland.activeToplevel.address == windowIconDelegate.toplevel.address
+                            visible: Hyprland.focusedWorkspace.id == pill.workspace.id
+                                     && Hyprland.activeToplevel
+                                     && windowIconDelegate.toplevel
+                                     && Hyprland.activeToplevel.address == windowIconDelegate.toplevel.address
                             bottomRightRadius: 2 * h
                             bottomLeftRadius: 2 * h
                             z: -1
