@@ -136,6 +136,16 @@ RowLayout {
                         canEnterTooltip: true
                         tooltipContent: ColumnLayout {
                             anchors.fill: parent
+
+                            TapHandler {
+                                parent: parent
+                                acceptedButtons: Qt.LeftButton
+                                onTapped: {
+                                    if (Hyprland.focusedWorkspace && Hyprland.focusedWorkspace.id !== pill.workspace.id) {
+                                        pill.workspace.activate();
+                                    }
+                                }
+                            }
                             RowLayout {
                                 id: titleRow
                                 Layout.fillWidth: true
