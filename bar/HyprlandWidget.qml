@@ -48,10 +48,10 @@ RowLayout {
                     color: (Hyprland.focusedWorkspace?.id || -1) == pill.workspace.id ? Theme.green : Theme.text
                     font.bold: true
                     font.pixelSize: Hyprland.focusedWorkspace && Hyprland.focusedWorkspace.id == pill.workspace.id ? 18 : 14
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked: function (mouse) {
+                    TapHandler {
+                        parent: parent
+                        acceptedButtons: Qt.LeftButton
+                        onTapped: function (mouse) {
                             if (mouse.button === Qt.LeftButton && Hyprland.focusedWorkspace && Hyprland.focusedWorkspace.id !== pill.workspace.id) {
                                 pill.workspace.activate();
                             }

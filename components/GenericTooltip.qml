@@ -45,14 +45,17 @@ Item {
         }
     }
 
-    MouseArea {
+    HoverHandler {
         id: triggerArea
-        anchors.fill: parent
-        hoverEnabled: true
-        acceptedButtons: Qt.NoButton
+        target: parent
 
-        onEntered: root.open(root.openDelay)
-        onExited: root.close(root.closeDelay)
+        onHoveredChanged: {
+            if (hovered) {
+                root.open(root.openDelay);
+            } else {
+                root.close(root.closeDelay);
+            }
+        }
     }
 
     LazyLoader {

@@ -27,9 +27,10 @@ Pill {
                 source: Quickshell.iconPath(pill.expanded ? "pan-end" : "pan-start")
             }
         }
-        MouseArea {
-            anchors.fill: parent
-            onClicked: pill.expanded = !pill.expanded
+        TapHandler {
+            target: parent
+            acceptedButtons: Qt.LeftButton
+            onTapped: pill.expanded = !pill.expanded
         }
     }
 
