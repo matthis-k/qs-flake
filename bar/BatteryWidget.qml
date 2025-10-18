@@ -132,7 +132,7 @@ Item {
                     Layout.alignment: Qt.AlignLeft
 
                     ColorOverlay {
-                        id: powerProfileIcon
+                        id: powerProfileIcon2
                         property string iconName: ({
                                 [PowerProfile.Performance]: "power-profile-performance-symbolic",
                                 [PowerProfile.Balanced]: "power-profile-balanced-symbolic",
@@ -146,7 +146,7 @@ Item {
                         implicitWidth: 32
                         implicitHeight: 32
                         source: IconImage {
-                            source: Quickshell.iconPath(powerProfileIcon.iconName)
+                            source: Quickshell.iconPath(powerProfileIcon2.iconName)
                             implicitSize: 32
                         }
                     }
