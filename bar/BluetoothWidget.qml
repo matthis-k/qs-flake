@@ -37,10 +37,8 @@ Item {
 
     ColorOverlay {
         id: btOverlay
-        anchors.centerIn: parent
         anchors.fill: parent
         color: btOn ? Theme.blue : Theme.red
-
         source: IconImage {
             anchors.fill: parent
             anchors.margins: 4
@@ -51,168 +49,182 @@ Item {
     }
 
     GenericTooltip {
-        anchors.centerIn: parent
         anchors.fill: parent
         background: Theme.crust
         canEnterTooltip: true
 
-        tooltipContent: Rectangle {
-            implicitWidth: 260
-            implicitHeight: col.implicitHeight
-            color: "transparent"
+        tooltipContent: ColumnLayout {
+            id: col
+            spacing: 8
+            width: 280
 
-            ColumnLayout {
-                id: col
-                anchors.top: parent.top
-                anchors.right: parent.right
-                anchors.left: parent.left
-                spacing: 6
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 32
+                spacing: 10
 
-                RowLayout {
-                    spacing: 8
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 32
-
-                    IconImage {
-                        source: Quickshell.iconPath(btIconName(), "bluetooth-symbolic")
-                        implicitSize: 16
-                    }
-
-                    Text {
-                        Layout.fillWidth: true
-                        color: Theme.text
-                        text: adapter ? `${adapter.name || adapter.adapterId} — ${adapterStateStr}` : "Bluetooth: Unavailable"
-                    }
-
-                    Switch {
-                        visible: !!adapter
-                        checked: adapter && adapter.enabled
-                        onToggled: if (adapter)
-                            adapter.enabled = checked
-                    }
-                }
-
-                RowLayout {
-                    visible: !!adapter
-                    spacing: 8
-                    Layout.fillWidth: true
+                ColorOverlay {
+                    id: headerIcon
+                    Layout.preferredWidth: 24
                     Layout.preferredHeight: 24
-
-                    Text {
-                        color: Theme.subtext0
-                        text: adapter ? `Discovering: ${adapter.discovering ? "yes" : "no"} · Discoverable: ${adapter.discoverable ? "yes" : "no"}` : ""
-                        Layout.fillWidth: true
-                    }
-
-                    Button {
-                        visible: !!adapter
-                        text: root.expanded ? "Show less" : "Show more"
-                        background: Rectangle {
-                            radius: Theme.rounded ? 8 : 0
-                            color: Theme.base
-                            border.width: 1
-                            border.color: hovered ? Theme.overlay1 : Theme.overlay0
-                        }
-                        onClicked: root.expanded = !root.expanded
+                    color: btOn ? Theme.blue : Theme.red
+                    source: IconImage {
+                        anchors.fill: parent
+                        source: Quickshell.iconPath(btIconName(), "bluetooth-symbolic")
+                        implicitSize: 32
                     }
                 }
 
-                ListView {
-                    id: devicesList
-                    visible: root.expanded && !!adapter
+                Text {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: Math.min(240, contentHeight)
-                    clip: true
-                    spacing: 6
-                    model: adapter ? adapter.devices : null
+                    text: adapter ? `Bluetooth: ${adapterStateStr}` : "Bluetooth: Unavailable"
+                    color: Theme.text
+                    font.pixelSize: 24
+                    elide: Text.ElideRight
+                }
 
-                    delegate: Item {
-                        required property var modelData    
-                        width: devicesList.width
-                        height: contentCol.implicitHeight
+                Switch {
+                    visible: !!adapter
+                    checked: adapter && adapter.enabled
+                    onToggled: if (adapter)
+                        adapter.enabled = checked
+                }
+            }
 
-                        ColumnLayout {
-                            id: contentCol
-                            anchors.fill: parent
-                            spacing: 4
+            Text {
+                Layout.fillWidth: true
+                visible: !!adapter
+                text: adapter ? (adapter.name || "Unknown adapter") : ""
+                color: Theme.subtext0
+                font.pixelSize: 12
+                elide: Text.ElideRight
+            }
 
-                            RowLayout {
+            RowLayout {
+                visible: !!adapter
+                Layout.fillWidth: true
+                Layout.preferredHeight: 28
+                spacing: 8
+
+                Text {
+                    Layout.fillWidth: true
+                    color: Theme.subtext0
+                    text: adapter ? `Discovering: ${adapter.discovering ? "yes" : "no"} · Discoverable: ${adapter.discoverable ? "yes" : "no"}` : ""
+                    elide: Text.ElideRight
+                }
+
+                Button {
+                    id: expandBtn
+                    text: root.expanded ? "Show less" : "Show more"
+                    onClicked: root.expanded = !root.expanded
+                    background: Rectangle {
+                        radius: Theme.rounded ? 8 : 0
+                        color: Theme.base
+                        border.width: 1
+                        border.color: expandBtn.down ? Theme.blue : (expandBtn.hovered ? Theme.overlay1 : Theme.overlay0)
+                    }
+                }
+            }
+
+            ListView {
+                id: devicesList
+                visible: root.expanded && !!adapter
+                Layout.fillWidth: true
+                Layout.preferredHeight: Math.min(260, contentHeight)
+                spacing: 6
+                clip: true
+                model: adapter ? adapter.devices : null
+
+                delegate: Item {
+                    required property var modelData
+                    width: devicesList.width
+                    height: contentCol.implicitHeight
+
+                    ColumnLayout {
+                        id: contentCol
+                        anchors.fill: parent
+                        spacing: 4
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 28
+                            spacing: 8
+
+                            IconImage {
+                                source: Quickshell.iconPath(modelData.icon || "bluetooth-symbolic", "bluetooth-symbolic")
+                                implicitSize: 16
+                            }
+
+                            Text {
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 28
-                                spacing: 8
+                                color: modelData.connected ? Theme.green : Theme.text
+                                text: modelData.name || modelData.deviceName
+                                elide: Text.ElideRight
+                            }
 
-                                IconImage {
-                                    source: Quickshell.iconPath(modelData.icon || "bluetooth-symbolic", "bluetooth-symbolic")
-                                    implicitSize: 16
+                            Text {
+                                visible: modelData.batteryAvailable
+                                color: Theme.subtext0
+                                text: `${Math.round((modelData.battery ?? 0) * 100)}%`
+                            }
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 8
+
+                            Button {
+                                id: actionBtn
+                                text: modelData.connected ? "Disconnect" : (modelData.paired ? "Connect" : "Pair")
+                                onClicked: {
+                                    if (!modelData.paired) {
+                                        modelData.pair();
+                                    } else if (modelData.connected) {
+                                        modelData.disconnect();
+                                    } else {
+                                        modelData.connect();
+                                    }
+                                    root.expandedAddr = "";
                                 }
-
-                                Text {
-                                    Layout.fillWidth: true
-                                    color: modelData.connected ? Theme.green : Theme.text
-                                    text: modelData.name || modelData.deviceName
-                                }
-
-                                Text {
-                                    visible: modelData.batteryAvailable
-                                    color: Theme.subtext0
-                                    text: `${Math.round((modelData.battery ?? 0) * 100)}%`
+                                background: Rectangle {
+                                    radius: Theme.rounded ? 8 : 0
+                                    color: Theme.base
+                                    border.width: 1
+                                    border.color: actionBtn.down ? Theme.blue : (actionBtn.hovered ? Theme.overlay1 : Theme.overlay0)
                                 }
                             }
 
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: 8
-
-                                Button {
-                                    text: modelData.connected ? "Disconnect" : (modelData.paired ? "Connect" : "Pair")
-                                    background: Rectangle {
-                                        radius: Theme.rounded ? 8 : 0
-                                        color: Theme.base
-                                        border.width: 1
-                                        border.color: down ? Theme.blue : (hovered ? Theme.overlay1 : Theme.overlay0)
-                                    }
-                                    onClicked: {
-                                        if (!modelData.paired) {
-                                            modelData.pair();
-                                        } else if (modelData.connected) {
-                                            modelData.disconnect();
-                                        } else {
-                                            modelData.connect();
-                                        }
-                                        root.expandedAddr = "";
-                                    }
-                                }
-
-                                Button {
-                                    text: "Forget"
-                                    visible: modelData.paired || modelData.trusted
-                                    background: Rectangle {
-                                        radius: Theme.rounded ? 8 : 0
-                                        color: Theme.base
-                                        border.width: 1
-                                        border.color: down ? Theme.blue : (hovered ? Theme.overlay1 : Theme.overlay0)
-                                    }
-                                    onClicked: modelData.forget()
-                                }
-
-                                Button {
-                                    text: "Cancel"
-                                    visible: modelData.pairing
-                                    background: Rectangle {
-                                        radius: Theme.rounded ? 8 : 0
-                                        color: Theme.base
-                                        border.width: 1
-                                        border.color: down ? Theme.blue : (hovered ? Theme.overlay1 : Theme.overlay0)
-                                    }
-                                    onClicked: modelData.cancelPair()
+                            Button {
+                                id: forgetBtn
+                                text: "Forget"
+                                visible: modelData.paired || modelData.trusted
+                                onClicked: modelData.forget()
+                                background: Rectangle {
+                                    radius: Theme.rounded ? 8 : 0
+                                    color: Theme.base
+                                    border.width: 1
+                                    border.color: forgetBtn.down ? Theme.blue : (forgetBtn.hovered ? Theme.overlay1 : Theme.overlay0)
                                 }
                             }
 
-                            Rectangle {
-                                height: 1
-                                color: Theme.surface1
-                                Layout.fillWidth: true
+                            Button {
+                                id: cancelBtn
+                                text: "Cancel"
+                                visible: modelData.pairing
+                                onClicked: modelData.cancelPair()
+                                background: Rectangle {
+                                    radius: Theme.rounded ? 8 : 0
+                                    color: Theme.base
+                                    border.width: 1
+                                    border.color: cancelBtn.down ? Theme.blue : (cancelBtn.hovered ? Theme.overlay1 : Theme.overlay0)
+                                }
                             }
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 1
+                            color: Theme.surface1
                         }
                     }
                 }
