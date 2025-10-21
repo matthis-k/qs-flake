@@ -61,6 +61,7 @@ RowLayout {
             }
 
             Repeater {
+                Component.onCompleted: Hyprland.refreshToplevels()
                 model: pill.workspace.toplevels ? pill.workspace.toplevels.values.filter(t => t.title !== "Wayland to X Recording bridge — Xwayland Video Bridge") : []
                 delegate: Rectangle {
                     id: windowIconDelegate
@@ -196,6 +197,8 @@ RowLayout {
                                     TapHandler {
                                         id: tapHandler
                                         acceptedButtons: Qt.LeftButton
+                                        gesturePolicy: TapHandler.WithinBounds
+                                        grabPermissions: PointerHandler.TakeOverForbidden
                                         onTapped: {
                                             windowIconDelegate.toplevel?.wayland?.close();
                                         }

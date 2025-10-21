@@ -8,6 +8,17 @@ import "../components"
 
 PanelWindow {
     id: barWin
+
+    function show(): void {
+        barWin.visible = true;
+    }
+    function hide(): void {
+        barWin.visible = false;
+    }
+    function toggle(): void {
+        barWin.visible = !barWin.visible;
+    }
+
     anchors {
         top: true
         left: true
