@@ -196,6 +196,8 @@ RowLayout {
                                     TapHandler {
                                         id: tapHandler
                                         acceptedButtons: Qt.LeftButton
+                                        gesturePolicy: TapHandler.WithinBounds
+                                        grabPermissions: PointerHandler.TakeOverForbidden
                                         onTapped: {
                                             windowIconDelegate.toplevel?.wayland?.close();
                                         }
