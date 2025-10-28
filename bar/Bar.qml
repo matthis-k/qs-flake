@@ -9,10 +9,10 @@ import "../components"
 PanelWindow {
     id: barWin
 
-    function show(): void {
+    function open(): void {
         barWin.visible = true;
     }
-    function hide(): void {
+    function close(): void {
         barWin.visible = false;
     }
     function toggle(): void {

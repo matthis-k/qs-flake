@@ -21,7 +21,7 @@
         qs = quickshell.packages.${system}.default;
         configDir = ./.;
         quickde = pkgs.writeShellScriptBin "quickde" ''
-          exec ${qs}/bin/quickshell -p ${configDir}
+          exec ${qs}/bin/quickshell -p ${configDir} $@
         '';
       in
       {
