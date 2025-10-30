@@ -66,6 +66,7 @@ PanelWindow {
                 BluetoothWidget {}
                 NetworkWidget {}
                 BatteryWidget {}
+                PowerMenuWidget {}
             }
         }
     }
