@@ -135,11 +135,17 @@ RowLayout {
                     GenericTooltip {
                         id: tt
                         canEnterTooltip: true
-                        tooltipContent: ColumnLayout {
-                            anchors.fill: parent
+
+                        tooltipContent: Item {
+                            id: ttRoot
+                            property int margin: 4
+                            property int spacing: 6
+
+                            implicitWidth: view.width
+                            implicitHeight: titleRow.height + spacing + view.height
 
                             TapHandler {
-                                parent: parent
+                                parent: ttRoot
                                 acceptedButtons: Qt.LeftButton
                                 onTapped: {
                                     if (Hyprland.focusedWorkspace && Hyprland.focusedWorkspace.id !== pill.workspace.id) {
@@ -147,26 +153,60 @@ RowLayout {
                                     }
                                 }
                             }
-                            RowLayout {
+
+                            ScreencopyView {
+                                id: view
+                                anchors {
+                                    top: titleRow.bottom
+                                    topMargin: ttRoot.spacing
+                                    horizontalCenter: parent.horizontalCenter
+                                }
+                                live: true
+                                captureSource: windowIconDelegate.toplevel.wayland
+
+                                readonly property real maxWidth: 1920 / 4
+                                readonly property real maxHeight: 1080 / 4
+                                constraintSize: Qt.size(maxWidth, maxHeight)
+
+                                implicitWidth: hasContent ? implicitWidth : maxWidth
+                                implicitHeight: hasContent ? implicitHeight : maxHeight
+                            }
+
+                            Item {
                                 id: titleRow
-                                Layout.fillWidth: true
-                                spacing: 6
+                                anchors {
+                                    top: parent.top
+                                    topMargin: ttRoot.margin
+                                    horizontalCenter: view.horizontalCenter
+                                }
+                                width: view.width
+                                height: Math.max(24, title.implicitHeight)
 
                                 Text {
                                     id: title
+                                    anchors {
+                                        left: parent.left
+                                        right: closeButton.left
+                                        verticalCenter: parent.verticalCenter
+                                        rightMargin: 6
+                                    }
                                     text: windowIconDelegate.toplevel.title
                                     color: Theme.text
                                     elide: Text.ElideRight
-                                    Layout.fillWidth: true
-                                    Layout.alignment: Qt.AlignVCenter
-                                    Layout.maximumWidth: view.width - closeButton.implicitWidth - 8
+                                    wrapMode: Text.NoWrap
+                                    horizontalAlignment: Text.AlignLeft
+                                    verticalAlignment: Text.AlignVCenter
                                 }
 
                                 Item {
                                     id: closeButton
-                                    Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
                                     width: 24
                                     height: 24
+                                    anchors {
+                                        right: parent.right
+                                        verticalCenter: parent.verticalCenter
+                                    }
+
                                     Rectangle {
                                         anchors.fill: parent
                                         color: {
@@ -199,34 +239,15 @@ RowLayout {
                                         acceptedButtons: Qt.LeftButton
                                         gesturePolicy: TapHandler.WithinBounds
                                         grabPermissions: PointerHandler.TakeOverForbidden
-                                        onTapped: {
-                                            windowIconDelegate.toplevel?.wayland?.close();
-                                        }
+                                        onTapped: windowIconDelegate.toplevel?.wayland?.close()
                                     }
                                 }
                             }
-                            ScreencopyView {
-                                id: view
-                                property real maxRatio: 16 / 9
-                                property real sourceRatio: sourceSize.width / sourceSize.height
-                                property real ratioFactor: sourceRatio / maxRatio // if ratio > 1, then shrink height
-                                property real maxWidth: 1920 / 4
-                                property real maxHeight: 1080 / 4
-                                live: true
-                                captureSource: windowIconDelegate.toplevel.wayland
-                                Layout.preferredWidth: {
-                                    if (!view.hasContent) {
-                                        return maxWidth;
-                                    }
-                                    return ratioFactor > 1 ? maxWidth : maxWidth * ratioFactor;
-                                }
-                                Layout.preferredHeight: {
-                                    if (!view.hasContent) {
-                                        return maxHeight;
-                                    }
-                                    return ratioFactor > 1 ? maxHeight / ratioFactor : maxHeight;
-                                }
-                            }
+
+                            anchors.leftMargin: margin
+                            anchors.rightMargin: margin
+                            anchors.topMargin: margin
+                            anchors.bottomMargin: margin
                         }
                     }
                 }
