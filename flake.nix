@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    quickshell.url = "github:quickshell-mirror/quickshell"; # track master branch
+    quickshell.url = "github:quickshell-mirror/quickshell";
   };
 
   outputs =
@@ -32,5 +32,8 @@
           program = "${quickde}/bin/quickde";
         };
       }
-    );
+    )
+    // {
+      nixosModules.default = { quickshell }: import ./module.nix { inherit quickshell; };
+    };
 }
