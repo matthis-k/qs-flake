@@ -146,15 +146,22 @@ Item {
     }
 
     property bool keepOpen: false
+    property bool timerTriggered: false
 
     HoverHandler {
         onHoveredChanged: {
             if (hovered) {
-                hoverTimer.start();
+                keepOpen = false;
+                timerTriggered = false;
+                if (!hoverTimer.runngin) {
+                    hoverTimer.start();
+                }
             } else {
-                hoverTimer.stop();
-                if (!keepOpen)
+                if (keepOpen) {
+                    hoverTimer.stop();
+                } else if (!timerTriggered) {
                     QuickSettingsManager.close();
+                }
             }
         }
     }
@@ -162,7 +169,10 @@ Item {
     Timer {
         id: hoverTimer
         interval: 500
-        onTriggered: QuickSettingsManager.open("network")
+        onTriggered: {
+            QuickSettingsManager.open("network");
+            timerTriggered = true;
+        }
     }
 
     TapHandler {

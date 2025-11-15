@@ -6,28 +6,26 @@ import QtQuick
 import "../quickSettings"
 
 Singleton {
-    QuickSettings {
-        id: quickSettings
-    }
+    property QuickSettings qs: QuickSettings {}
 
     HyprlandFocusGrab {
         id: focusGrab
-        windows: [quickSettings]
-        active: quickSettings.visible
+        windows: [qs]
+        active: qs.visible
     }
 
     IpcHandler {
         target: "quicksettings"
 
         function open(view: string): void {
-            quickSettings.currentView = view;
-            quickSettings.visible = true;
+            qs.currentView = view;
+            qs.visible = true;
         }
         function close(): void {
             quickSettings.visible = false;
         }
         function toggle(view: string): void {
-            if (quickSettings.visible && quickSettings.currentView == view) {
+            if (qs.visible && qs.currentView == view) {
                 close();
             } else {
                 open(view);
@@ -36,16 +34,16 @@ Singleton {
     }
 
     function open(view: string): void {
-        quickSettings.currentView = view;
-        quickSettings.visible = true;
+        qs.currentView = view;
+        qs.visible = true;
     }
 
     function close(): void {
-        quickSettings.visible = false;
+        qs.visible = false;
     }
 
     function toggle(view: string): void {
-        if (quickSettings.visible && quickSettings.currentView == view) {
+        if (qs.visible && qs.currentView == view) {
             close();
         } else {
             open(view);

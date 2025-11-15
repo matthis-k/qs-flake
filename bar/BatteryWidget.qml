@@ -53,6 +53,35 @@ Item {
         }
     }
 
+    property bool keepOpen: false
+    property bool timerTriggered: false
+
+    HoverHandler {
+        onHoveredChanged: {
+            if (hovered) {
+                keepOpen = false;
+                timerTriggered = false;
+                if (!hoverTimer.runngin) {
+                    hoverTimer.start();
+                }
+            } else {
+                if (keepOpen) {
+                    hoverTimer.stop();
+                } else if (!timerTriggered) {
+                    QuickSettingsManager.close();
+                }
+            }
+        }
+    }
+
+    Timer {
+        id: hoverTimer
+        interval: 500
+        onTriggered: {
+            QuickSettingsManager.open("battery");
+            timerTriggered = true;
+        }
+    }
     TapHandler {
         onSingleTapped: {
             QuickSettingsManager.toggle("battery");

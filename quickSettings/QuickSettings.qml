@@ -34,8 +34,7 @@ PanelWindow {
         }
     }
 
-    Timer {
-        id: closeTimer
+    property Timer closeTimer: Timer {
         interval: 500
         onTriggered: QuickSettingsManager.close()
     }

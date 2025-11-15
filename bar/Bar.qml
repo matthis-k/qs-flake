@@ -5,6 +5,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../theme"
 import "../components"
+import "../managers"
 
 PanelWindow {
     id: barWin
@@ -59,6 +60,14 @@ PanelWindow {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
 
+            HoverHandler {
+                onHoveredChanged: {
+                    if (hovered) {
+                        QuickSettingsManager.qs.closeTimer.stop();
+                    }
+                }
+            }
+
             Pill {
                 Layout.fillHeight: true
                 SystemTrayWidget {
@@ -71,5 +80,15 @@ PanelWindow {
                 PowerMenuWidget {}
             }
         }
+    }
+
+    Rectangle {
+        id: sep
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        height: 1
+        implicitWidth: 1920 - (QuickSettingsManager.qs.visible * QuickSettingsManager.qs.implicitWidth)
+
+        color: Theme.green
     }
 }
