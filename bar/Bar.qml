@@ -8,6 +8,8 @@ import "../components"
 
 PanelWindow {
     id: barWin
+    property var modelData
+    screen: modelData
 
     function open(): void {
         barWin.visible = true;

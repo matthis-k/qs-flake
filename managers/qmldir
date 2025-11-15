@@ -1,0 +1,3 @@
+singleton AppLauncherManager 1.0 AppLauncherManager.qml
+singleton BarManager 1.0 BarManager.qml
+singleton QuickSettingsManager 1.0 QuickSettingsManager.qml

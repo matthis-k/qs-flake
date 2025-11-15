@@ -3,10 +3,12 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import Quickshell
+import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 import "../theme"
 import "../components"
+import "../managers"
 
 Item {
     id: root
@@ -108,205 +110,9 @@ Item {
         }
     }
 
-    GenericTooltip {
-        anchors.centerIn: parent
-        anchors.fill: parent
-        background: Theme.crust
-        canEnterTooltip: true
-        popupWidth: 300
-
-        tooltipContent: ColumnLayout {
-            spacing: 10
-
-            RowLayout {
-                id: masterRow
-                Layout.fillWidth: true
-                Layout.leftMargin: 4
-                spacing: 10
-
-                ColorOverlay {
-                    implicitWidth: 32
-                    implicitHeight: 32
-                    color: overlayColor(root.sink?.audio?.volume, root.sink?.audio?.muted)
-                    source: IconImage {
-                        anchors.centerIn: parent
-                        implicitSize: 32
-                        source: Quickshell.iconPath(volumeIcon(root.sink?.audio?.volume, root.sink?.audio?.muted), "multimedia-volume-control")
-                    }
-                    TapHandler {
-                        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad | PointerDevice.Stylus
-                        gesturePolicy: TapHandler.ReleaseWithinBounds
-                        onTapped: if (root.hasSink)
-                            root.sink.audio.muted = !root.sink.audio.muted
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
-
-                        Text {
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignLeft
-                            elide: Text.ElideRight
-                            color: Theme.text
-                            text: root.hasSink ? `${root.sink.nickname || root.sink.description || "Output"}` : "No output device"
-                        }
-                        Text {
-                            Layout.alignment: Qt.AlignRight
-                            color: Theme.subtext0
-                            text: root.hasSink ? `${pct(root.sink.audio.volume)}%` : "--%"
-                            width: 56
-                            horizontalAlignment: Text.AlignRight
-                        }
-                    }
-
-                    Slider {
-                        id: masterSlider
-                        Layout.fillWidth: true
-                        from: 0.0
-                        to: root.maxVol
-                        stepSize: 0
-                        value: root.hasSink ? root.sink.audio.volume : 0
-                        onMoved: if (root.hasSink)
-                            root.sink.audio.volume = value
-                    }
-                }
-
-                WheelHandler {
-                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-                    onWheel: {
-                        adjustMaster(event);
-                        event.accepted = true;
-                    }
-                }
-            }
-
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 6
-
-                Text {
-                    color: Theme.subtext1
-                    text: "Apps"
-                    font.bold: true
-                }
-
-                ListView {
-                    id: appList
-                    visible: root.hasSink
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: Math.min(280, contentHeight)
-                    clip: true
-                    spacing: 6
-                    model: sinkLinks.linkGroups
-
-                    delegate: Item {
-                        required property var modelData
-                        width: appList.width
-                        height: row.implicitHeight
-
-                        readonly property var stream: modelData?.source
-                        readonly property bool isAudio: !!stream && !!stream.audio
-                        visible: isAudio
-
-                        RowLayout {
-                            id: row
-                            anchors.fill: parent
-                            anchors.margins: 2
-                            spacing: 8
-
-                            ColorOverlay {
-                                implicitWidth: 18
-                                implicitHeight: 18
-                                color: overlayColor(stream?.audio?.volume, stream?.audio?.muted)
-                                source: IconImage {
-                                    implicitSize: 18
-                                    source: Quickshell.iconPath(volumeIcon(stream?.audio?.volume, stream?.audio?.muted), "multimedia-volume-control")
-                                }
-
-                                TapHandler {
-                                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad | PointerDevice.Stylus
-                                    gesturePolicy: TapHandler.ReleaseWithinBounds
-                                    onTapped: if (stream?.audio)
-                                        stream.audio.muted = !stream.audio.muted
-                                }
-                                WheelHandler {
-                                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-                                    onWheel: {
-                                        adjustStream(stream, event);
-                                        event.accepted = true;
-                                    }
-                                }
-                            }
-
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 6
-
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 4
-
-                                    Text {
-                                        Layout.fillWidth: true
-                                        elide: Text.ElideRight
-                                        color: Theme.text
-                                        text: streamDisplayName(stream)
-                                    }
-                                    Text {
-                                        width: 56
-                                        horizontalAlignment: Text.AlignRight
-                                        color: Theme.text
-                                        text: stream?.audio ? `${pct(stream.audio.volume)}%` : "--%"
-                                    }
-                                }
-
-                                Slider {
-                                    Layout.fillWidth: true
-                                    from: 0.0
-                                    to: root.maxVol
-                                    stepSize: 0
-                                    enabled: !!stream?.audio
-                                    value: stream?.audio?.volume ?? 0
-                                    onMoved: if (stream?.audio)
-                                        stream.audio.volume = value
-                                }
-                            }
-                        }
-
-                        WheelHandler {
-                            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-                            onWheel: {
-                                adjustStream(stream, event);
-                                event.accepted = true;
-                            }
-                        }
-
-                        Rectangle {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            height: 1
-                            y: row.implicitHeight + 2
-                            color: Theme.surface1
-                        }
-                    }
-                }
-
-                Text {
-                    visible: root.hasSink && appList.count === 0
-                    color: Theme.subtext0
-                    text: "No active app streams"
-                }
-                Text {
-                    visible: !root.hasSink
-                    color: Theme.subtext0
-                    text: "No output sink available"
-                }
-            }
+    TapHandler {
+        onSingleTapped: {
+            QuickSettingsManager.toggle("audio");
         }
     }
 }

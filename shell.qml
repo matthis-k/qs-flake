@@ -2,43 +2,10 @@
 import Quickshell
 import Quickshell.Io
 import QtQuick
-import "bar"
-import "applauncher"
+import "managers"
 
 Scope {
-    Bar {
-        id: bar
-    }
-
-    IpcHandler {
-        target: "bar"
-
-        function open(): void {
-            bar.open();
-        }
-        function hide(): void {
-            bar.close();
-        }
-        function toggle(): void {
-            bar.toggle();
-        }
-    }
-
-    AppLauncher {
-        id: appLauncher
-    }
-
-    IpcHandler {
-        target: "applauncher"
-
-        function open(): void {
-            appLauncher.open();
-        }
-        function close(): void {
-            appLauncher.close();
-        }
-        function toggle(): void {
-            appLauncher.toggle();
-        }
-    }
+    property BarManager bars: BarManager
+    property QuickSettingsManager qs: QuickSettingsManager
+    property AppLauncherManager appLauncher: AppLauncherManager
 }
