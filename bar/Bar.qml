@@ -89,6 +89,6 @@ PanelWindow {
         height: 1
         implicitWidth: 1920 - (QuickSettingsManager.qs.visible * QuickSettingsManager.qs.implicitWidth)
 
-        color: Theme.green
+        color: Theme.blue
     }
 }

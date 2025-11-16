@@ -45,7 +45,7 @@ PanelWindow {
 
     property string currentView: "network"
     property int cornerRadius: Theme.rounded * 16
-    property color borderColor: Theme.green
+    property color borderColor: Theme.blue
     property bool isPeeking: false
 
     HoverHandler {
