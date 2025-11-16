@@ -6,47 +6,40 @@ import QtQuick
 import "../quickSettings"
 
 Singleton {
+    id: root
     property QuickSettings qs: QuickSettings {}
 
     HyprlandFocusGrab {
         id: focusGrab
         windows: [qs]
-        active: qs.visible
+        active: qs.visible && !qs.isPeeking
     }
 
     IpcHandler {
         target: "quicksettings"
 
         function open(view: string): void {
-            qs.currentView = view;
-            qs.visible = true;
+            qs.open(view, false);
         }
         function close(): void {
-            quickSettings.visible = false;
+            qs.close();
         }
         function toggle(view: string): void {
-            if (qs.visible && qs.currentView == view) {
-                close();
-            } else {
-                open(view);
-            }
+            qs.toggle(view, false);
         }
     }
-
-    function open(view: string): void {
-        qs.currentView = view;
-        qs.visible = true;
+    function open(view: string, peeking: bool): void {
+        peeking = peeking || false;
+        qs.open(view, peeking);
     }
-
-    function close(): void {
-        qs.visible = false;
-    }
-
-    function toggle(view: string): void {
-        if (qs.visible && qs.currentView == view) {
-            close();
-        } else {
-            open(view);
+    function close(timeout_ms: int): void {
+        if (timeout_ms == null || timeout_ms == undefined) {
+            timeout_ms = 0;
         }
+        qs.close(timeout_ms);
+    }
+    function toggle(view: string, peeking: bool): void {
+        peeking = peeking || false;
+        qs.toggle(view, peeking);
     }
 }

@@ -19,9 +19,34 @@ PanelWindow {
         right: true
     }
 
+    function open(view: string, peeking: bool): void {
+        peeking = peeking || false;
+        currentView = view;
+        visible = true;
+        isPeeking = peeking;
+        closeTimer.stop();
+    }
+
+    function close(timeout_ms: int): void {
+        if (timeout_ms == null || timeout_ms == undefined) {
+            timeout_ms = 0;
+        }
+        closeTimer.interval = timeout_ms;
+        closeTimer.start();
+    }
+
+    function toggle(view: string, peeking): void {
+        if (visible && currentView == view) {
+            close();
+        } else {
+            open(view, peeking);
+        }
+    }
+
     property string currentView: "network"
     property int cornerRadius: Theme.rounded * 16
     property color borderColor: Theme.green
+    property bool isPeeking: false
 
     HoverHandler {
         id: hoverHandler
@@ -29,14 +54,16 @@ PanelWindow {
             if (hovered) {
                 closeTimer.stop();
             } else {
-                closeTimer.start();
+                close(500);
             }
         }
     }
 
     property Timer closeTimer: Timer {
         interval: 500
-        onTriggered: QuickSettingsManager.close()
+        onTriggered: {
+            quickSettings.visible = false;
+        }
     }
 
     Rectangle {

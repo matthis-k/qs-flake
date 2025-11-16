@@ -110,38 +110,23 @@ Item {
         }
     }
 
-    property bool keepOpen: false
-    property bool timerTriggered: false
+    property bool peeking: false
 
     HoverHandler {
         onHoveredChanged: {
             if (hovered) {
-                keepOpen = false;
-                timerTriggered = false;
-                if (!hoverTimer.runngin) {
-                    hoverTimer.start();
-                }
-            } else {
-                if (keepOpen) {
-                    hoverTimer.stop();
-                } else if (!timerTriggered) {
-                    QuickSettingsManager.close();
-                }
+                peeking = true;
+                QuickSettingsManager.open("audio", peeking);
+            } else if (peeking) {
+                QuickSettingsManager.close(500);
             }
         }
     }
 
-    Timer {
-        id: hoverTimer
-        interval: 500
-        onTriggered: {
-            QuickSettingsManager.open("audio");
-            timerTriggered = true;
-        }
-    }
     TapHandler {
         onSingleTapped: {
-            QuickSettingsManager.toggle("audio");
+            peeking = false;
+            QuickSettingsManager.toggle("audio", peeking);
         }
     }
 }

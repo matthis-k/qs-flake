@@ -24,38 +24,23 @@ Item {
         }
     }
 
-    property bool keepOpen: false
-    property bool timerTriggered: false
+    property bool peeking: false
 
     HoverHandler {
         onHoveredChanged: {
             if (hovered) {
-                keepOpen = false;
-                timerTriggered = false;
-                if (!hoverTimer.runngin) {
-                    hoverTimer.start();
-                }
-            } else {
-                if (keepOpen) {
-                    hoverTimer.stop();
-                } else if (!timerTriggered) {
-                    QuickSettingsManager.close();
-                }
+                peeking = true;
+                QuickSettingsManager.open("powermenu", peeking);
+            } else if (peeking) {
+                QuickSettingsManager.close(500);
             }
         }
     }
 
-    Timer {
-        id: hoverTimer
-        interval: 500
-        onTriggered: {
-            QuickSettingsManager.open("powermenu");
-            timerTriggered = true;
-        }
-    }
     TapHandler {
         onSingleTapped: {
-            QuickSettingsManager.toggle("powermenu");
+            peeking = false;
+            QuickSettingsManager.toggle("powermenu", peeking);
         }
     }
 }
