@@ -51,8 +51,8 @@ RowLayout {
                     TapHandler {
                         parent: parent
                         acceptedButtons: Qt.LeftButton
-                        onTapped: function (mouse) {
-                            if (mouse.button === Qt.LeftButton && Hyprland.focusedWorkspace && Hyprland.focusedWorkspace.id !== pill.workspace.id) {
+                        onTapped: {
+                            if (Hyprland.focusedWorkspace && Hyprland.focusedWorkspace.id !== pill.workspace.id) {
                                 pill.workspace.activate();
                             }
                         }
@@ -145,7 +145,6 @@ RowLayout {
                             implicitHeight: titleRow.height + spacing + view.height
 
                             TapHandler {
-                                parent: ttRoot
                                 acceptedButtons: Qt.LeftButton
                                 onTapped: {
                                     if (Hyprland.focusedWorkspace && Hyprland.focusedWorkspace.id !== pill.workspace.id) {
