@@ -13,6 +13,10 @@ Item {
     implicitWidth: opts.implicitWidth
     implicitHeight: opts.implicitHeight
 
+    Process {
+        id: runner
+    }
+
     component PowerOption: Item {
         id: option
         required property list<string> command
@@ -29,7 +33,9 @@ Item {
         TapHandler {
             acceptedButtons: Qt.LeftButton
             cursorShape: Qt.PointingHandCursor
-            onTapped: runner.run(option.command)
+            onTapped: runner.exec({
+                command
+            })
         }
 
         Rectangle {
