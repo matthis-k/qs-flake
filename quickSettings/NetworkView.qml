@@ -3,7 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Widgets
-import "../theme"
 import "../services"
 
 Item {
@@ -32,7 +31,7 @@ Item {
 
             Text {
                 text: nm.networks.find(n => n.inUse)?.ssid || `State: ${nm.managerState}`
-                color: Theme.text
+                color: Config.styling.text0
                 font.pixelSize: 24
                 Layout.fillWidth: true
                 elide: Text.ElideRight
@@ -45,7 +44,7 @@ Item {
             Layout.preferredHeight: 32
             Text {
                 text: "Show more"
-                color: Theme.text
+                color: Config.styling.text0
                 Layout.fillWidth: true
             }
             IconImage {
@@ -84,14 +83,14 @@ Item {
                         }
                         Text {
                             text: modelData.ssid
-                            color: modelData.inUse ? Theme.green : Theme.text
+                            color: modelData.inUse ? Config.styling.good : Config.styling.text0
                             Layout.fillWidth: true
                         }
                         Text {
                             visible: modelData.band !== "2.4GHz"
                             Layout.alignment: Qt.AlignRight
                             text: modelData.band
-                            color: modelData.inUse ? Theme.green : Theme.subtext0
+                            color: modelData.inUse ? Config.styling.good : Config.styling.text1
                         }
                     }
 
@@ -105,19 +104,19 @@ Item {
                             Layout.fillWidth: true
                             placeholderText: "Password"
                             echoMode: TextInput.Password
-                            color: Theme.text
-                            placeholderTextColor: Theme.overlay1
-                            selectionColor: Theme.surface2
-                            selectedTextColor: Theme.text
+                            color: Config.styling.text0
+                            placeholderTextColor: Config.styling.bg7
+                            selectionColor: Config.styling.bg5
+                            selectedTextColor: Config.styling.text0
                             leftPadding: 4
                             rightPadding: 4
                             topPadding: 4
                             bottomPadding: 4
                             background: Rectangle {
                                 radius: 8
-                                color: Theme.base
+                                color: Config.styling.bg2
                                 border.width: pwField.activeFocus ? 2 : 1
-                                border.color: pwField.activeFocus ? Theme.lavender : (pwField.hovered ? Theme.overlay1 : Theme.overlay0)
+                                border.color: pwField.activeFocus ? Config.colors.lavender : (pwField.hovered ? Config.styling.bg7 : Config.styling.bg6)
                             }
                         }
 
@@ -135,21 +134,23 @@ Item {
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                                 elide: Text.ElideRight
-                                color: Theme.text
+                                color: Config.styling.text0
                             }
                             background: Rectangle {
                                 radius: 8
-                                color: connectBtn.hovered ? Theme.surface0 : Theme.base
+                                color: connectBtn.hovered ? Config.styling.bg3 : Config.styling.bg2
                                 border.width: 1
-                                border.color: connectBtn.down ? Theme.blue : (connectBtn.hovered ? Theme.overlay1 : Theme.overlay0)
+                                border.color: connectBtn.down ? Config.styling.primaryAccent : (connectBtn.hovered ? Config.styling.bg7 : Config.styling.bg6)
                             }
                             onClicked: {
                                 if (modelData.inUse) {
                                     nm.disconnect(modelData.ssid);
                                 } else {
                                     const sec = modelData.security.toLowerCase();
-                                    if (sec === "open") nm.connectOpen(modelData.ssid);
-                                    else nm.connectPsk(modelData.ssid, pwField.text);
+                                    if (sec === "open")
+                                        nm.connectOpen(modelData.ssid);
+                                    else
+                                        nm.connectPsk(modelData.ssid, pwField.text);
                                 }
                             }
                         }

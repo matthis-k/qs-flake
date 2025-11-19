@@ -3,7 +3,7 @@ import Quickshell.Widgets
 import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
-import "../theme"
+import "../services" 1.0
 import "../components"
 import "../managers"
 
@@ -27,7 +27,7 @@ PanelWindow {
         left: true
         right: true
     }
-    color: Theme.crust
+    color: Config.styling.bg0
     implicitHeight: 32
 
     Rectangle {
@@ -89,6 +89,6 @@ PanelWindow {
         height: 1
         implicitWidth: 1920 - (QuickSettingsManager.qs.visible * QuickSettingsManager.qs.implicitWidth)
 
-        color: Theme.blue
+        color: Config.styling.primaryAccent
     }
 }

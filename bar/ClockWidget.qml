@@ -1,10 +1,10 @@
 import QtQuick
 import QtQuick
 import QtQuick.Layouts
-import "../theme"
+import "../services" 1.0
 
 Text {
     text: Time.time
     font.bold: true
-    color: Theme.text
+    color: Config.styling.text0
 }

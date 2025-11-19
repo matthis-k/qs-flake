@@ -4,7 +4,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Bluetooth
-import "../theme"
+import "../services" 1.0
 
 Item {
     id: root
@@ -49,7 +49,7 @@ Item {
             Text {
                 Layout.fillWidth: true
                 text: adapter ? `Bluetooth: ${adapterStateStr}` : "Bluetooth: Unavailable"
-                color: Theme.text
+                color: Config.styling.text0
                 font.pixelSize: 24
                 elide: Text.ElideRight
             }
@@ -65,7 +65,7 @@ Item {
             visible: !!adapter
             Layout.fillWidth: true
             text: adapter ? `Adapter: ${adapter.name || "Unknown"}` : ""
-            color: Theme.subtext0
+            color: Config.styling.text1
             font.pixelSize: 12
             elide: Text.ElideRight
         }
@@ -78,7 +78,7 @@ Item {
 
             Text {
                 Layout.fillWidth: true
-                color: Theme.subtext0
+                color: Config.styling.text1
                 text: adapter ? `Discovering: ${adapter.discovering ? "yes" : "no"} · Discoverable: ${adapter.discoverable ? "yes" : "no"}` : ""
                 elide: Text.ElideRight
             }
@@ -89,9 +89,9 @@ Item {
                 onClicked: expanded = !expanded
                 background: Rectangle {
                     radius: 8
-                    color: Theme.base
+                    color: Config.styling.bg2
                     border.width: 1
-                    border.color: expandBtn.down ? Theme.blue : (expandBtn.hovered ? Theme.overlay1 : Theme.overlay0)
+                    border.color: expandBtn.down ? Config.styling.primaryAccent : (expandBtn.hovered ? Config.styling.bg7 : Config.styling.bg6)
                 }
             }
         }
@@ -127,14 +127,14 @@ Item {
 
                         Text {
                             Layout.fillWidth: true
-                            color: modelData.connected ? Theme.green : Theme.text
+                            color: modelData.connected ? Config.styling.good : Config.styling.text0
                             text: modelData.name || modelData.deviceName
                             elide: Text.ElideRight
                         }
 
                         Text {
                             visible: modelData.batteryAvailable
-                            color: Theme.subtext0
+                            color: Config.styling.text1
                             text: `${Math.round((modelData.battery ?? 0) * 100)}%`
                         }
                     }
@@ -157,9 +157,9 @@ Item {
                             }
                             background: Rectangle {
                                 radius: 8
-                                color: Theme.base
+                                color: Config.styling.bg2
                                 border.width: 1
-                                border.color: actionBtn.down ? Theme.blue : (actionBtn.hovered ? Theme.overlay1 : Theme.overlay0)
+                                border.color: actionBtn.down ? Config.styling.primaryAccent : (actionBtn.hovered ? Config.styling.bg7 : Config.styling.bg6)
                             }
                         }
 
@@ -170,9 +170,9 @@ Item {
                             onClicked: modelData.forget()
                             background: Rectangle {
                                 radius: 8
-                                color: Theme.base
+                                color: Config.styling.bg2
                                 border.width: 1
-                                border.color: forgetBtn.down ? Theme.blue : (forgetBtn.hovered ? Theme.overlay1 : Theme.overlay0)
+                                border.color: forgetBtn.down ? Config.styling.primaryAccent : (forgetBtn.hovered ? Config.styling.bg7 : Config.styling.bg6)
                             }
                         }
 
@@ -183,9 +183,9 @@ Item {
                             onClicked: modelData.cancelPair()
                             background: Rectangle {
                                 radius: 8
-                                color: Theme.base
+                                color: Config.styling.bg2
                                 border.width: 1
-                                border.color: cancelBtn.down ? Theme.blue : (cancelBtn.hovered ? Theme.overlay1 : Theme.overlay0)
+                                border.color: cancelBtn.down ? Config.styling.primaryAccent : (cancelBtn.hovered ? Config.styling.bg7 : Config.styling.bg6)
                             }
                         }
                     }
@@ -193,7 +193,7 @@ Item {
                     Rectangle {
                         Layout.fillWidth: true
                         height: 1
-                        color: Theme.surface1
+                        color: Config.styling.bg4
                     }
                 }
             }

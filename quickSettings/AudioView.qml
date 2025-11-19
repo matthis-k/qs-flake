@@ -5,7 +5,7 @@ import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
-import "../theme"
+import "../services" 1.0
 import "../components"
 
 Item {
@@ -34,10 +34,10 @@ Item {
 
     function overlayColor(vol, muted) {
         if (muted)
-            return Theme.red;
+            return Config.styling.critical;
         if ((vol ?? 0) === 0.0)
-            return Theme.peach;
-        return Theme.text;
+            return Config.styling.warning;
+        return Config.styling.text0;
     }
 
     function clampVol(v) {
@@ -126,12 +126,12 @@ Item {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignLeft
                         elide: Text.ElideRight
-                        color: Theme.text
+                        color: Config.styling.text0
                         text: root.hasSink ? `${root.sink.nickname || root.sink.description || "Output"}` : "No output device"
                     }
                     Text {
                         Layout.alignment: Qt.AlignRight
-                        color: Theme.subtext0
+                        color: Config.styling.text1
                         text: root.hasSink ? `${pct(root.sink.audio.volume)}%` : "--%"
                         width: 56
                         horizontalAlignment: Text.AlignRight
@@ -164,7 +164,7 @@ Item {
             spacing: 6
 
             Text {
-                color: Theme.subtext1
+                color: Config.styling.text2
                 text: "Apps"
                 font.bold: true
             }
@@ -228,13 +228,13 @@ Item {
                                 Text {
                                     Layout.fillWidth: true
                                     elide: Text.ElideRight
-                                    color: Theme.text
+                                    color: Config.styling.text0
                                     text: streamDisplayName(stream)
                                 }
                                 Text {
                                     width: 56
                                     horizontalAlignment: Text.AlignRight
-                                    color: Theme.text
+                                    color: Config.styling.text0
                                     text: stream?.audio ? `${pct(stream.audio.volume)}%` : "--%"
                                 }
                             }
@@ -265,19 +265,19 @@ Item {
                         anchors.right: parent.right
                         height: 1
                         y: row.implicitHeight + 2
-                        color: Theme.surface1
+                        color: Config.styling.bg4
                     }
                 }
             }
 
             Text {
                 visible: root.hasSink && appList.count === 0
-                color: Theme.subtext0
+                color: Config.styling.text1
                 text: "No active app streams"
             }
             Text {
                 visible: !root.hasSink
-                color: Theme.subtext0
+                color: Config.styling.text1
                 text: "No output sink available"
             }
         }

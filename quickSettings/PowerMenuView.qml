@@ -5,7 +5,7 @@ import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
-import "../theme"
+import "../services" 1.0
 import "../components"
 
 Item {
@@ -42,7 +42,7 @@ Item {
             id: bg
             anchors.fill: parent
             radius: 8
-            color: hhLogout.hovered ? Theme.surface1 : "transparent"
+            color: hhLogout.hovered ? Config.styling.bg4 : "transparent"
         }
 
         RowLayout {
@@ -63,13 +63,13 @@ Item {
                 spacing: 0
                 Text {
                     text: option.text
-                    color: Theme.text
+                    color: Config.styling.text0
                     font.bold: true
                     font.pixelSize: 16
                 }
                 Text {
                     text: option.subtext
-                    color: Theme.subtext1
+                    color: Config.styling.text2
                     font.pixelSize: 12
                 }
             }
@@ -83,7 +83,7 @@ Item {
         PowerOption {
             Layout.fillWidth: true
             command: ["uwsm", "stop"]
-            icon_color: Theme.yellow
+            icon_color: Config.colors.yellow
             icon: "system-log-out-symbolic"
             text: "Logout"
             subtext: "End current session"
@@ -92,7 +92,7 @@ Item {
         PowerOption {
             Layout.fillWidth: true
             command: ["systemctl", "hibernate"]
-            icon_color: Theme.teal
+            icon_color: Config.colors.teal
             icon: "system-suspend-hibernate-symbolic"
             text: "Hibernate"
             subtext: "Save to disk"
@@ -101,7 +101,7 @@ Item {
         PowerOption {
             Layout.fillWidth: true
             command: ["systemctl", "reboot"]
-            icon_color: Theme.peach
+            icon_color: Config.styling.warning
             icon: "system-reboot-symbolic"
             text: "Reboot"
             subtext: "Restart system"
@@ -109,7 +109,7 @@ Item {
         PowerOption {
             Layout.fillWidth: true
             command: ["systemctl", "poweroff"]
-            icon_color: Theme.red
+            icon_color: Config.styling.critical
             icon: "system-reboot-symbolic"
             text: "Power off"
             subtext: "Shut down system"

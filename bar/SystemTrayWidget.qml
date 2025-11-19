@@ -5,7 +5,7 @@ import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import Qt5Compat.GraphicalEffects
 import "../components"
-import "../theme"
+import "../services" 1.0
 
 Pill {
     id: pill
@@ -19,7 +19,7 @@ Pill {
         ColorOverlay {
             anchors.centerIn: parent
             anchors.fill: parent
-            color: Theme.text
+            color: Config.styling.text0
             source: IconImage {
                 anchors.fill: parent
                 anchors.margins: 4

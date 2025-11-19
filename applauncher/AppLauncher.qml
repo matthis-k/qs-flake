@@ -7,7 +7,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Qt.labs.qmlmodels
 import QtQml.Models
-import "../theme"
+import "../services"
 import "../components"
 
 PanelWindow {
@@ -60,7 +60,7 @@ PanelWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.crust
+        color: Config.styling.bg0
         opacity: 0.9
     }
 
@@ -84,8 +84,8 @@ PanelWindow {
             Layout.preferredHeight: 40
 
             radius: 20
-            color: Theme.base
-            border.color: Theme.surface1
+            color: Config.styling.bg2
+            border.color: Config.styling.bg4
             border.width: 1
 
             Rectangle {
@@ -101,9 +101,9 @@ PanelWindow {
                 anchors.leftMargin: 16
                 anchors.rightMargin: 16
                 verticalAlignment: TextInput.AlignVCenter
-                color: Theme.text
-                selectionColor: Theme.sapphire
-                selectedTextColor: Theme.base
+                color: Config.styling.text0
+                selectionColor: Config.colors.sapphire
+                selectedTextColor: Config.styling.bg2
                 font.pixelSize: 14
                 focus: true
                 echoMode: TextInput.Normal
@@ -169,9 +169,9 @@ PanelWindow {
                         id: hoverBg
                         anchors.margins: 4
                         anchors.fill: parent
-                        radius: Theme.rounded ? 20 : 0
-                        color: entryItem.selected || hovered ? Theme.surface0 : Theme.base
-                        border.color: Theme.green
+                        radius: Config.styling.rounded ? 20 : 0
+                        color: entryItem.selected || hovered ? Config.styling.bg3 : Config.styling.bg2
+                        border.color: Config.styling.good
                         border.width: entryItem.selected * 2
                     }
 
@@ -197,7 +197,7 @@ PanelWindow {
                             Layout.preferredWidth: c.entrywidth
                             Layout.maximumWidth: c.entrywidth
                             text: modelData.name
-                            color: Theme.text
+                            color: Config.styling.text0
                             font.pixelSize: 13
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
@@ -210,7 +210,7 @@ PanelWindow {
                             Layout.preferredWidth: c.entrywidth
                             Layout.maximumWidth: c.entrywidth
                             text: modelData.genericName !== "" ? modelData.genericName : modelData.comment
-                            color: Theme.subtext0
+                            color: Config.styling.text1
                             font.pixelSize: 11
                             horizontalAlignment: Text.AlignHCenter
                             wrapMode: Text.NoWrap

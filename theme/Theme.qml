@@ -1,7 +1,8 @@
 pragma Singleton
 import QtQuick 2.15
+import Quickshell
 
-QtObject {
+Singleton {
     id: theme
 
     // Catppuccin Mocha palette (official)

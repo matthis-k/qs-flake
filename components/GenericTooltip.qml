@@ -4,7 +4,7 @@ import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import "../theme"
+import "../services" 1.0
 
 Item {
     id: root
@@ -15,8 +15,8 @@ Item {
     property bool canEnterTooltip: false
     property real margin: 8
     property bool visibleCond: true
-    property color background: Theme.crust
-    property var borderColor: Theme.blue
+    property color background: Config.styling.bg0
+    property var borderColor: Config.styling.primaryAccent
     property var popupWidth
 
     function open(timeout = 0) {
@@ -81,7 +81,7 @@ Item {
                     id: content
                     anchors.fill: parent
                     color: root.background
-                    radius: Theme.rounded * 2 * root.margin
+                    radius: Config.styling.rounded * 2 * root.margin
                     border.color: root.borderColor
                     border.width: root.borderColor && 2 || 0
 

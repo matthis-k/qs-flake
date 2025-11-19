@@ -6,7 +6,7 @@ import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Bluetooth
 import Qt5Compat.GraphicalEffects
-import "../theme"
+import "../services" 1.0
 import "../components"
 import "../managers"
 
@@ -40,7 +40,7 @@ Item {
     ColorOverlay {
         id: btOverlay
         anchors.fill: parent
-        color: btOn ? Theme.blue : Theme.red
+        color: btOn ? Config.styling.primaryAccent : Config.styling.critical
         source: IconImage {
             anchors.fill: parent
             anchors.margins: 4

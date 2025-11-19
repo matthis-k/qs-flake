@@ -5,7 +5,7 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Io
 import Qt5Compat.GraphicalEffects
-import "../theme"
+import "../services" 1.0
 import "../components"
 import "../managers"
 
@@ -16,7 +16,7 @@ Item {
 
     ColorOverlay {
         anchors.fill: parent
-        color: Theme.red
+        color: Config.styling.critical
         source: IconImage {
             anchors.centerIn: parent
             implicitSize: 24

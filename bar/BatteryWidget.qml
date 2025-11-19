@@ -5,7 +5,7 @@ import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Services.UPower
 import Qt5Compat.GraphicalEffects
-import "../theme"
+import "../services" 1.0
 import "../components"
 import "../managers"
 
@@ -20,19 +20,19 @@ Item {
         return [
             {
                 max: 10,
-                col: Theme.red
+                col: Config.styling.critical
             },
             {
                 max: 20,
-                col: Theme.yellow
+                col: Config.colors.yellow
             },
             {
                 max: 60,
-                col: Theme.text
+                col: Config.styling.text0
             },
             {
                 max: 100,
-                col: Theme.green
+                col: Config.styling.good
             }
         ].find(({
                 max,

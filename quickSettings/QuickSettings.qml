@@ -3,7 +3,7 @@ import QtQuick.Shapes
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
-import "../theme"
+import "../services" 1.0
 import "../managers/"
 import "."
 
@@ -44,8 +44,8 @@ PanelWindow {
     }
 
     property string currentView: "network"
-    property int cornerRadius: Theme.rounded * 16
-    property color borderColor: Theme.blue
+    property int cornerRadius: Config.styling.rounded * 16
+    property color borderColor: Config.styling.primaryAccent
     property bool isPeeking: false
 
     HoverHandler {
@@ -72,7 +72,7 @@ PanelWindow {
         anchors.right: parent.right
         anchors.left: stackLayout.left
         anchors.bottom: stackLayout.bottom
-        color: Theme.crust
+        color: Config.styling.bg0
     }
 
     Rectangle {
@@ -81,7 +81,7 @@ PanelWindow {
         anchors.top: parent.top
         anchors.bottom: stackLayout.bottom
         width: cornerRadius
-        color: Theme.crust
+        color: Config.styling.bg0
     }
 
     Rectangle {
@@ -90,7 +90,7 @@ PanelWindow {
         anchors.left: stackLayout.left
         anchors.right: parent.right
         height: cornerRadius
-        color: Theme.crust
+        color: Config.styling.bg0
     }
 
     Rectangle {
@@ -100,22 +100,22 @@ PanelWindow {
         height: 2 * cornerRadius
         width: 2 * cornerRadius
         radius: cornerRadius
-        color: Theme.crust
+        color: Config.styling.bg0
     }
 
-    Item {
-        id: bgTopLeftEntry
-        width: cornerRadius
-        height: cornerRadius
-        anchors.left: quickSettings.left
-        anchors.top: quickSettings.top
+        Item {
+            id: bgTopLeftEntry
+            width: cornerRadius
+            height: cornerRadius
+            anchors.left: quickSettings.left
+            anchors.top: quickSettings.top
 
-        Shape {
-            anchors.fill: parent
+            Shape {
+                anchors.fill: parent
 
-            ShapePath {
-                strokeWidth: 0
-                fillColor: Theme.crust
+                ShapePath {
+                    strokeWidth: 0
+                    fillColor: Config.styling.bg0
                 fillRule: ShapePath.OddEvenFill
 
                 startX: 0
@@ -230,19 +230,19 @@ PanelWindow {
         anchors.bottom: bgBottom.bottom
     }
 
-    Item {
-        id: bottomRightExit
-        width: cornerRadius
-        height: cornerRadius
-        anchors.right: bgBottom.right
-        anchors.top: bgBottom.bottom
+        Item {
+            id: bottomRightExit
+            width: cornerRadius
+            height: cornerRadius
+            anchors.right: bgBottom.right
+            anchors.top: bgBottom.bottom
 
-        Shape {
-            anchors.fill: parent
+            Shape {
+                anchors.fill: parent
 
-            ShapePath {
-                strokeWidth: 0
-                fillColor: Theme.crust
+                ShapePath {
+                    strokeWidth: 0
+                    fillColor: Config.styling.bg0
                 fillRule: ShapePath.OddEvenFill
 
                 startX: 0

@@ -4,9 +4,8 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
-import "../theme"
 import "../components"
-import "../services"
+import "../services" 1.0
 import "../managers"
 
 Item {
@@ -47,7 +46,7 @@ Item {
             }
             Text {
                 text: network?.ssid ?? ""
-                color: network?.inUse ? Theme.green : Theme.text
+                color: network?.inUse ? Config.styling.good : Config.styling.text0
                 Layout.fillWidth: true
                 elide: Text.ElideRight
             }
@@ -55,7 +54,7 @@ Item {
                 visible: !!network?.band && network.band !== "2.4GHz"
                 Layout.alignment: Qt.AlignRight
                 text: network?.band ?? ""
-                color: network?.inUse ? Theme.green : Theme.subtext0
+                color: network?.inUse ? Config.styling.good : Config.styling.text1
             }
         }
 
@@ -76,29 +75,29 @@ Item {
                 Layout.fillWidth: true
                 placeholderText: "Password"
                 echoMode: TextInput.Password
-                color: Theme.text
-                placeholderTextColor: Theme.overlay1
-                selectionColor: Theme.surface2
-                selectedTextColor: Theme.text
-                leftPadding: 4 + Theme.rounded * 8
-                rightPadding: 4 + Theme.rounded * 8
-                topPadding: 4 + Theme.rounded * 4
-                bottomPadding: 4 + Theme.rounded * 4
+                color: Config.styling.text0
+                placeholderTextColor: Config.styling.bg7
+                selectionColor: Config.styling.bg5
+                selectedTextColor: Config.styling.text0
+                leftPadding: 4 + Config.styling.rounded * 8
+                rightPadding: 4 + Config.styling.rounded * 8
+                topPadding: 4 + Config.styling.rounded * 4
+                bottomPadding: 4 + Config.styling.rounded * 4
                 background: Rectangle {
-                    radius: Theme.rounded ? 8 : 0
-                    color: Theme.base
+                    radius: Config.styling.rounded ? 8 : 0
+                    color: Config.styling.bg2
                     border.width: pwField.activeFocus ? 2 : 1
-                    border.color: pwField.activeFocus ? Theme.lavender : (pwField.hovered ? Theme.overlay1 : Theme.overlay0)
+                    border.color: pwField.activeFocus ? Config.colors.lavender : (pwField.hovered ? Config.styling.bg7 : Config.styling.bg6)
                 }
             }
 
             Button {
                 id: connectBtn
                 text: network?.inUse ? "Disconnect" : "Connect"
-                leftPadding: 8 + Theme.rounded * 8
-                rightPadding: 8 + Theme.rounded * 8
-                topPadding: 4 + Theme.rounded * 4
-                bottomPadding: 4 + Theme.rounded * 4
+                leftPadding: 8 + Config.styling.rounded * 8
+                rightPadding: 8 + Config.styling.rounded * 8
+                topPadding: 4 + Config.styling.rounded * 4
+                bottomPadding: 4 + Config.styling.rounded * 4
 
                 contentItem: Text {
                     text: connectBtn.text
@@ -106,13 +105,13 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
-                    color: Theme.text
+                    color: Config.styling.text0
                 }
                 background: Rectangle {
-                    radius: Theme.rounded ? 8 : 0
-                    color: connectBtn.hovered ? Theme.surface0 : Theme.base
+                    radius: Config.styling.rounded ? 8 : 0
+                    color: connectBtn.hovered ? Config.styling.bg3 : Config.styling.bg2
                     border.width: 1
-                    border.color: connectBtn.down ? Theme.blue : (connectBtn.hovered ? Theme.overlay1 : Theme.overlay0)
+                    border.color: connectBtn.down ? Config.styling.primaryAccent : (connectBtn.hovered ? Config.styling.bg7 : Config.styling.bg6)
                 }
                 onClicked: {
                     if (network?.inUse) {

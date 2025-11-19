@@ -5,15 +5,15 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
-import "../theme"
+import "../services" 1.0
 
 Item {
     id: root
     required property QsMenuHandle menu
 
-    property color background: Theme.surface0
-    property color borderColor: Theme.blue
-    property int margin: Theme.rounded * radius
+    property color background: Config.styling.bg3
+    property color borderColor: Config.styling.primaryAccent
+    property int margin: Config.styling.rounded * radius
     property int radius: 8
 
     QsMenuOpener {
@@ -135,7 +135,7 @@ Item {
                                 Rectangle {
                                     anchors.fill: headerArea
                                     visible: backHover.hovered
-                                    color: Theme.surface1
+                                    color: Config.styling.bg4
                                     radius: Math.max(0, root.radius - 2)
                                 }
                                 Rectangle {
@@ -168,7 +168,7 @@ Item {
                                         Layout.alignment: Qt.AlignVCenter
                                         ColorOverlay {
                                             anchors.fill: parent
-                                            color: Theme.blue
+                                            color: Config.styling.primaryAccent
                                             source: IconImage {
                                                 anchors.fill: parent
                                                 implicitSize: 16
@@ -180,7 +180,7 @@ Item {
 
                                     Text {
                                         text: qsTr("Back")
-                                        color: Theme.blue
+                                        color: Config.styling.primaryAccent
                                         font.pixelSize: 16
                                         Layout.alignment: Qt.AlignVCenter
                                     }
@@ -227,7 +227,7 @@ Item {
                                             id: hoverBg
                                             visible: (!isSep) && rowHover.hovered
                                             anchors.fill: parent
-                                            color: Theme.surface1
+                                            color: Config.styling.bg4
                                             radius: Math.max(0, root.radius - 2)
                                         }
 
@@ -262,7 +262,7 @@ Item {
 
                                             Text {
                                                 text: entry.text || ""
-                                                color: isEnabled ? Theme.text : Theme.blue
+                                                color: isEnabled ? Config.styling.text0 : Config.styling.primaryAccent
                                                 elide: Text.ElideRight
                                                 font.pixelSize: 16
                                             }
@@ -280,7 +280,7 @@ Item {
                                                     Layout.fillWidth: true
                                                     ColorOverlay {
                                                         anchors.fill: parent
-                                                        color: Theme.text
+                                                        color: Config.styling.text0
                                                         source: IconImage {
                                                             anchors.fill: parent
                                                             implicitSize: 16

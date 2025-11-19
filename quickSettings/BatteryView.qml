@@ -4,7 +4,7 @@ import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.UPower
-import "../theme"
+import "../services" 1.0
 
 Item {
     id: root
@@ -19,19 +19,19 @@ Item {
         return [
             {
                 max: 10,
-                col: Theme.red
+                col: Config.styling.critical
             },
             {
                 max: 20,
-                col: Theme.yellow
+                col: Config.colors.yellow
             },
             {
                 max: 60,
-                col: Theme.text
+                col: Config.styling.text0
             },
             {
                 max: 100,
-                col: Theme.green
+                col: Config.styling.good
             }
         ].find(({
                 max,
@@ -47,7 +47,7 @@ Item {
             Layout.fillWidth: true
             Text {
                 text: `Battery status:`
-                color: Theme.text
+                color: Config.styling.text0
                 font.pixelSize: 24
             }
             Text {
@@ -60,7 +60,7 @@ Item {
 
         Text {
             visible: bat.state == UPowerDeviceState.Charging
-            color: Theme.text
+            color: Config.styling.text0
             text: {
                 let time = bat.timeToFull;
                 let h = Math.floor(time / 60 / 60);
@@ -71,7 +71,7 @@ Item {
 
         Text {
             visible: bat.state != UPowerDeviceState.Charging
-            color: Theme.text
+            color: Config.styling.text0
             text: {
                 let time = bat.timeToEmpty;
                 let h = Math.floor(time / 60 / 60);
@@ -125,9 +125,9 @@ Item {
                             [PowerProfile.PowerSaver]: "power-profile-power-saver-symbolic"
                         })[PowerProfiles.profile]
                     color: ({
-                            [PowerProfile.Performance]: Theme.red,
-                            [PowerProfile.Balanced]: Theme.yellow,
-                            [PowerProfile.PowerSaver]: Theme.green
+                            [PowerProfile.Performance]: Config.styling.critical,
+                            [PowerProfile.Balanced]: Config.colors.yellow,
+                            [PowerProfile.PowerSaver]: Config.styling.good
                         })[PowerProfiles.profile]
                     implicitWidth: 32
                     implicitHeight: 32
@@ -144,14 +144,14 @@ Item {
                     Text {
                         text: "Power profile"
                         font.pixelSize: 16
-                        color: Theme.text
+                        color: Config.styling.text0
                         font.bold: true
                     }
 
                     Text {
                         Layout.alignment: Qt.AlignHCenter
                         text: PowerProfile.toString(PowerProfiles.profile)
-                        color: Theme.subtext1
+                        color: Config.styling.text2
                         font.pixelSize: 12
                     }
                 }

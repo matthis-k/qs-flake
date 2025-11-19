@@ -6,7 +6,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
-import "../theme"
+import "../services" 1.0
 import "../components"
 import "../managers"
 
@@ -36,10 +36,10 @@ Item {
 
     function overlayColor(vol, muted) {
         if (muted)
-            return Theme.red;
+            return Config.styling.critical;
         if ((vol ?? 0) === 0.0)
-            return Theme.peach;
-        return Theme.text;
+            return Config.styling.warning;
+        return Config.styling.text0;
     }
 
     function clampVol(v) {
