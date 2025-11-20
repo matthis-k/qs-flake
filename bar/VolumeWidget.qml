@@ -6,14 +6,13 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
-import "../services" 1.0
+import "../services"
 import "../components"
 import "../managers"
 
 Item {
     id: root
-    implicitWidth: parent?.height ?? 24
-    implicitHeight: parent?.height ?? 24
+    implicitWidth: height
 
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property bool hasSink: !!sink && !!sink.audio
@@ -89,19 +88,21 @@ Item {
             return objs;
         }
     }
+    IconImage {
+        id: icon
+        anchors.centerIn: parent
+        anchors.margins: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
+        implicitSize: Math.round(root.height * Config.styling.statusIconScaler / 2) * 2
+        source: Quickshell.iconPath(volumeIcon(root.sink?.audio?.volume, root.sink?.audio?.muted), "multimedia-volume-control")
+        opacity: root.hasSink ? 1.0 : 0.7
+    }
 
     ColorOverlay {
-        anchors.centerIn: parent
-        anchors.fill: parent
+        anchors.fill: icon
         color: overlayColor(root.sink?.audio?.volume, root.sink?.audio?.muted)
-        source: IconImage {
-            anchors.fill: parent
-            anchors.margins: 4
-            implicitSize: 24
-            source: Quickshell.iconPath(volumeIcon(root.sink?.audio?.volume, root.sink?.audio?.muted), "multimedia-volume-control")
-            opacity: root.hasSink ? 1.0 : 0.7
-        }
+        source: icon
     }
+
     WheelHandler {
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
         onWheel: {

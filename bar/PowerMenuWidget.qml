@@ -5,23 +5,27 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Io
 import Qt5Compat.GraphicalEffects
-import "../services" 1.0
+import "../services"
 import "../components"
 import "../managers"
 
 Item {
     id: root
-    implicitWidth: parent ? parent.height : 48
-    implicitHeight: parent ? parent.height : 48
+    implicitWidth: root.height
+    implicitHeight: root.height
+
+    IconImage {
+        id: icon
+        anchors.fill: parent
+        anchors.margins: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
+        implicitSize: root.height
+        source: Quickshell.iconPath("system-shutdown-symbolic", "system-shutdown")
+    }
 
     ColorOverlay {
-        anchors.fill: parent
+        anchors.fill: icon
         color: Config.styling.critical
-        source: IconImage {
-            anchors.centerIn: parent
-            implicitSize: 24
-            source: Quickshell.iconPath("system-shutdown-symbolic", "system-shutdown")
-        }
+        source: icon
     }
 
     property bool peeking: false

@@ -11,31 +11,28 @@ import "../components"
 
 Item {
     id: root
-    implicitHeight: 28
-    implicitWidth: row.implicitWidth
 
     component Toplevel: Item {
         id: tl
-
         required property HyprlandToplevel toplevel
 
         property bool inFocusedWorkspace: Hyprland.focusedWorkspace && toplevel.workspace && Hyprland.focusedWorkspace.id === toplevel.workspace.id
 
-        implicitWidth: 28
-        implicitHeight: 28
+        implicitHeight: root.height
+        implicitWidth: root.height
 
         IconImage {
             property DesktopEntry entry: DesktopEntries.heuristicLookup(toplevel.wayland?.appId)
 
             anchors.centerIn: parent
-            implicitSize: Math.ceil(Math.max(tl.implicitWidth, tl.implicitHeight) * 3 / 4)
+            implicitSize: Math.round(root.height * 0.35) * 2
             source: Quickshell.iconPath(entry?.icon || "dialog-warning", "dialog-warning")
         }
 
         Rectangle {
             id: activeIndicator
             visible: inFocusedWorkspace && toplevel.activated
-            height: Math.max(1, Math.ceil(28 / 16))
+            height: Math.max(2, Math.round(root.height * 0.0625))
             color: Config.styling.activeIndicator
 
             anchors.top: tl.top
@@ -63,16 +60,15 @@ Item {
 
     component WorkspaceButton: Item {
         required property var workspace
-
-        implicitWidth: 28
-        implicitHeight: 28
+        implicitHeight: root.height
+        implicitWidth: root.height
 
         Text {
             anchors.centerIn: parent
             text: workspace.id
             color: (Hyprland.focusedWorkspace?.id === workspace?.id) ? Config.styling.activeIndicator : Config.styling.text0
             font.bold: true
-            font.pixelSize: (Hyprland.focusedWorkspace?.id === workspace?.id) ? 18 : 14
+            font.pixelSize: Math.round(root.height * (Hyprland.focusedWorkspace?.id === workspace?.id ? 0.75 : 0.5))
         }
 
         TapHandler {

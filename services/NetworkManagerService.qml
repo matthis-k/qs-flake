@@ -1,8 +1,10 @@
+pragma Singleton
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import Quickshell
 
-Item {
+Singleton {
     id: nm
     property var networks: []               // [{ssid,bssid,security,strength,inUse,icon}]
     property var active: []                 // [{name,uuid,device,icon}]
@@ -10,6 +12,14 @@ Item {
     property bool busy: false
     property string lastError: ""
     property bool monitorEnabled: true
+
+    readonly property var currentNetwork: {
+        for (let i = 0; i < networks.length; ++i) {
+            if (networks[i].inUse)
+                return networks[i];
+        }
+        return null;
+    }
 
     function refresh() {
         _listWifi();

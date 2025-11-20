@@ -11,9 +11,6 @@ Item {
     height: implicitHeight
     implicitWidth: columnLayout.implicitWidth
     implicitHeight: columnLayout.implicitHeight
-    NetworkManager {
-        id: nm
-    }
 
     ColumnLayout {
         id: columnLayout
@@ -25,12 +22,12 @@ Item {
             spacing: 10
 
             IconImage {
-                source: Quickshell.iconPath(nm.networks.find(n => n.inUse)?.icon || "network-wireless-offline-symbolic", "network-wireless-offline-symbolic")
+                source: Quickshell.iconPath(NetworkManager.networks.find(n => n.inUse)?.icon || "network-wireless-offline-symbolic", "network-wireless-offline-symbolic")
                 implicitSize: 32
             }
 
             Text {
-                text: nm.networks.find(n => n.inUse)?.ssid || `State: ${nm.managerState}`
+                text: NetworkManager.networks.find(n => n.inUse)?.ssid || `State: ${NetworkManager.managerState}`
                 color: Config.styling.text0
                 font.pixelSize: 24
                 Layout.fillWidth: true
@@ -61,7 +58,7 @@ Item {
             visible: expanded
             Layout.fillWidth: true
             Layout.preferredHeight: Math.min(contentHeight, 200)
-            model: nm.networks
+            model: NetworkManager.networks
             clip: true
             delegate: Item {
                 required property var modelData
@@ -144,13 +141,13 @@ Item {
                             }
                             onClicked: {
                                 if (modelData.inUse) {
-                                    nm.disconnect(modelData.ssid);
+                                    NetworkManager.disconnect(modelData.ssid);
                                 } else {
                                     const sec = modelData.security.toLowerCase();
                                     if (sec === "open")
-                                        nm.connectOpen(modelData.ssid);
+                                        NetworkManager.connectOpen(modelData.ssid);
                                     else
-                                        nm.connectPsk(modelData.ssid, pwField.text);
+                                        NetworkManager.connectPsk(modelData.ssid, pwField.text);
                                 }
                             }
                         }

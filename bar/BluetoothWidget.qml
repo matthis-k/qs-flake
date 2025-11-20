@@ -6,14 +6,14 @@ import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Bluetooth
 import Qt5Compat.GraphicalEffects
-import "../services" 1.0
+import "../services"
 import "../components"
 import "../managers"
 
 Item {
     id: root
-    implicitWidth: parent?.height ?? 24
-    implicitHeight: parent?.height ?? 24
+    implicitWidth: height
+    implicitHeight: height
 
     property bool expanded: false
     property string expandedAddr: ""
@@ -36,18 +36,20 @@ Item {
             return "bluetooth-searching-symbolic";
         return "bluetooth-symbolic";
     }
+    IconImage {
+        id: icon
+        anchors.fill: parent
+        anchors.margins: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
+        implicitSize: root.height
+        source: Quickshell.iconPath(btIconName(), "bluetooth-symbolic")
+        opacity: btOn ? 1.0 : 0.7
+        mipmap: true
+    }
 
     ColorOverlay {
-        id: btOverlay
-        anchors.fill: parent
+        anchors.fill: icon
         color: btOn ? Config.styling.primaryAccent : Config.styling.critical
-        source: IconImage {
-            anchors.fill: parent
-            anchors.margins: 4
-            implicitSize: 24
-            source: Quickshell.iconPath(btIconName(), "bluetooth-symbolic")
-            opacity: btOn ? 1.0 : 0.7
-        }
+        source: icon
     }
 
     property bool peeking: false

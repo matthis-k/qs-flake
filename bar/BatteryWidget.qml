@@ -5,15 +5,15 @@ import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Services.UPower
 import Qt5Compat.GraphicalEffects
-import "../services" 1.0
+import "../services"
 import "../components"
 import "../managers"
 
 Item {
     id: root
     property UPowerDevice bat: UPower.displayDevice
-    implicitWidth: parent.height
-    implicitHeight: parent.height
+    implicitWidth: height
+    implicitHeight: height
 
     property color stateColor: {
         let percentage = Math.floor(root.bat.percentage * 100);
@@ -40,17 +40,18 @@ Item {
             }) => percentage <= max).col;
     }
 
-    ColorOverlay {
-        id: powerProfileIcon
-        color: root.stateColor
+    IconImage {
+        id: icon
         anchors.fill: parent
-        source: IconImage {
-            id: icon
-            anchors.centerIn: parent
-            anchors.fill: parent
-            implicitSize: 24
-            source: Quickshell.iconPath(root.bat.iconName, "battery-full")
-        }
+        anchors.margins: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
+        implicitSize: root.height
+        source: Quickshell.iconPath(root.bat.iconName, "battery-full")
+    }
+
+    ColorOverlay {
+        color: root.stateColor
+        anchors.fill: icon
+        source: icon
     }
 
     property bool peeking: false

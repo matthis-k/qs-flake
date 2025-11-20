@@ -71,6 +71,8 @@ Singleton {
         property bool rounded: false
         property int radius: 8 * rounded
         property int margin: radius
+
+        property double statusIconScaler: 0.8
     }
 
     readonly property PersistentProperties colors: colorsObj

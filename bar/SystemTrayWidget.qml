@@ -5,40 +5,42 @@ import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import Qt5Compat.GraphicalEffects
 import "../components"
-import "../services" 1.0
+import "../services"
 
 Pill {
-    id: pill
+    id: root
     property bool expanded: false
     headerBackground: "transparent"
     contentBackground: "transparent"
 
     header: Item {
-        implicitHeight: 28
-        implicitWidth: implicitHeight
-        ColorOverlay {
-            anchors.centerIn: parent
+        implicitWidth: root.height
+        implicitHeight: root.height
+        IconImage {
+            id: icon
             anchors.fill: parent
-            color: Config.styling.text0
-            source: IconImage {
-                anchors.fill: parent
-                anchors.margins: 4
-                implicitSize: 24
-                source: Quickshell.iconPath(pill.expanded ? "pan-end" : "pan-start")
-            }
+            anchors.margins: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
+            implicitSize: root.height
+            source: Quickshell.iconPath(root.expanded ? "pan-end" : "pan-start")
         }
+
+        ColorOverlay {
+            anchors.fill: icon
+            color: Config.styling.text0
+            source: icon
+        }
+
         TapHandler {
             target: parent
             acceptedButtons: Qt.LeftButton
-            onTapped: pill.expanded = !pill.expanded
+            onTapped: root.expanded = !root.expanded
         }
     }
 
     Repeater {
         id: rep
-        model: pill.expanded ? SystemTray.items : null
+        model: root.expanded ? SystemTray.items : null
 
-        // this is where the passing happends, rest is essentially an expander
         delegate: Item {
             required property var modelData
             readonly property var tray: modelData
@@ -50,6 +52,8 @@ Pill {
 
             IconImage {
                 anchors.fill: parent
+                anchors.margins: 4
+                implicitSize: Math.min(parent.parent.parent.parent.parent.barHeight - 8, 24)
                 source: tray.icon
                 mipmap: true
             }
