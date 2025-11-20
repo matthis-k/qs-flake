@@ -22,7 +22,11 @@ Item {
         implicitWidth: root.height
 
         IconImage {
-            property DesktopEntry entry: DesktopEntries.heuristicLookup(toplevel.wayland?.appId)
+            property DesktopEntry entry: {
+                // binding for refreshing
+                DesktopEntries.applications?.values;
+                return DesktopEntries.heuristicLookup(toplevel.wayland?.appId);
+            }
 
             anchors.centerIn: parent
             implicitSize: Math.round(root.height * 0.35) * 2
@@ -131,6 +135,9 @@ Item {
                 workspace: workspaceRepeater.model[index]
             }
         }
-        Component.onCompleted: Hyprland.refreshToplevels()
+        Component.onCompleted: {
+            Hyprland.refreshWorkspaces();
+            Hyprland.refreshToplevels();
+        }
     }
 }
