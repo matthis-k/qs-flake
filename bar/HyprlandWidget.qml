@@ -20,6 +20,10 @@ Item {
 
         implicitHeight: root.height
         implicitWidth: root.height
+        width: implicitWidth
+        height: implicitHeight
+        transformOrigin: Item.Center
+        scale: 1
 
         IconImage {
             property DesktopEntry entry: {
@@ -94,13 +98,51 @@ Item {
             }
         }
 
-        Repeater {
-            id: windowRepeater
+        ListView {
+            id: windowList
+            Layout.alignment: Qt.AlignVCenter
+            Layout.preferredHeight: root.height
+            Layout.preferredWidth: Math.max(contentWidth, 0)
+            implicitHeight: root.height
+            implicitWidth: contentWidth
+            height: root.height
+            width: implicitWidth
+            spacing: Math.max(4, Math.round(root.height * 0.1))
+            orientation: ListView.Horizontal
+            interactive: false
+            boundsBehavior: Flickable.StopAtBounds
             model: (workspace?.toplevels?.values || []).filter(t => t.title !== "Wayland to X Recording bridge — Xwayland Video Bridge")
 
             delegate: Toplevel {
-                required property int index
-                toplevel: windowRepeater.model[index]
+                toplevel: modelData
+            }
+
+            add: Transition {
+                NumberAnimation {
+                    properties: "opacity,scale"
+                    from: 0.2
+                    to: 1
+                    duration: 200
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            remove: Transition {
+                NumberAnimation {
+                    properties: "opacity,scale"
+                    from: 1
+                    to: 0
+                    duration: 160
+                    easing.type: Easing.InCubic
+                }
+            }
+
+            displaced: Transition {
+                NumberAnimation {
+                    properties: "x,y"
+                    duration: 160
+                    easing.type: Easing.OutCubic
+                }
             }
         }
     }
