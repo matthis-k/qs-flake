@@ -114,6 +114,7 @@ Item {
             model: (workspace?.toplevels?.values || []).filter(t => t.title !== "Wayland to X Recording bridge — Xwayland Video Bridge")
 
             delegate: Toplevel {
+                required property var modelData
                 toplevel: modelData
             }
 
@@ -173,8 +174,8 @@ Item {
             }
 
             delegate: WorkspaceToplevelOverview {
-                required property int index
-                workspace: workspaceRepeater.model[index]
+                required property var modelData
+                workspace: modelData
             }
         }
         Component.onCompleted: {
