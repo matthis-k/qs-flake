@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQml
 import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Hyprland
@@ -12,16 +13,121 @@ import "../components"
 Item {
     id: root
 
+    readonly property bool expandMode: true
+    readonly property var defaultWorkspaceIds: [1, 2, 3, 4, 5]
+    property var workspacePlaceholders: ({})
+
+    Component {
+        id: workspacePlaceholderComponent
+        QtObject {
+            property int id: -1
+            function activate() {
+                if (id > 0)
+                    Hyprland.dispatch(`workspace ${id}`);
+            }
+        }
+    }
+
+    ListModel {
+        id: workspaceModel
+    }
+
+    function workspaceForId(id) {
+        const hyprWorkspace = Hyprland.workspaces?.values.find(w => w.id === id);
+        if (hyprWorkspace) {
+            if (workspacePlaceholders[id]) {
+                workspacePlaceholders[id].destroy();
+                delete workspacePlaceholders[id];
+            }
+            return hyprWorkspace;
+        }
+        if (!workspacePlaceholders[id]) {
+            workspacePlaceholders[id] = workspacePlaceholderComponent.createObject(root, {
+                id: id
+            });
+        }
+        return workspacePlaceholders[id];
+    }
+
+    function desiredWorkspaceIds() {
+        const ids = defaultWorkspaceIds.slice();
+        const hyprlandWorkspaces = Hyprland.workspaces?.values || [];
+        hyprlandWorkspaces.forEach(ws => {
+            if (!ids.includes(ws.id))
+                ids.push(ws.id);
+        });
+        const focusedId = Hyprland.focusedWorkspace?.id;
+        if (focusedId && !ids.includes(focusedId))
+            ids.push(focusedId);
+        return ids;
+    }
+
+    function applyWorkspaceBinding(index) {
+        const item = workspaceRepeater.itemAt(index);
+        if (!item)
+            return;
+        const entry = workspaceModel.get(index);
+        if (!entry)
+            return;
+        item.workspace = workspaceForId(entry.workspaceId);
+    }
+
+    function syncWorkspaceModel() {
+        const ids = desiredWorkspaceIds();
+        for (let i = 0; i < ids.length; ++i) {
+            const id = ids[i];
+            if (i >= workspaceModel.count) {
+                workspaceModel.append({
+                    workspaceId: id
+                });
+                continue;
+            }
+            if (workspaceModel.get(i).workspaceId !== id) {
+                workspaceModel.setProperty(i, "workspaceId", id);
+            }
+        }
+        while (workspaceModel.count > ids.length) {
+            workspaceModel.remove(workspaceModel.count - 1);
+        }
+        for (let i = 0; i < workspaceModel.count; ++i) {
+            applyWorkspaceBinding(i);
+        }
+    }
+
+    Component.onCompleted: syncWorkspaceModel()
+
+    Connections {
+        target: Hyprland
+        function onFocusedWorkspaceChanged() {
+            root.syncWorkspaceModel();
+        }
+    }
+
+    Connections {
+        target: Hyprland.workspaces
+        function onObjectInsertedPost() {
+            root.syncWorkspaceModel();
+        }
+        function onObjectRemovedPost() {
+            root.syncWorkspaceModel();
+        }
+    }
+
     component Toplevel: Item {
         id: tl
         required property HyprlandToplevel toplevel
 
         property bool inFocusedWorkspace: Hyprland.focusedWorkspace && toplevel.workspace && Hyprland.focusedWorkspace.id === toplevel.workspace.id
+        readonly property bool isActiveOnFocusedWorkspace: inFocusedWorkspace && toplevel?.activated
 
         implicitHeight: root.height
         implicitWidth: root.height
         width: implicitWidth
         height: implicitHeight
+
+        HoverHandler {
+            id: toplevelHover
+        }
 
         IconImage {
             property DesktopEntry entry: {
@@ -33,6 +139,36 @@ Item {
             anchors.centerIn: parent
             implicitSize: Math.round(root.height * 0.35) * 2
             source: Quickshell.iconPath(entry?.icon || "dialog-warning", "dialog-warning")
+            scale: toplevelHover.hovered ? 1.2 : 1
+
+            Behavior on scale {
+                enabled: Config.styling.animation.enabled
+                NumberAnimation {
+                    duration: Config.styling.animation.calc(0.1)
+                    easing.type: Easing.Bezier
+                    easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                }
+            }
+        }
+
+        Rectangle {
+            id: expandIndicator
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            height: Math.max(2, Math.round(root.height * 0.0625))
+            color: Config.styling.activeIndicator
+            width: parent.width
+            scale: root.expandMode && tl.isActiveOnFocusedWorkspace ? 1 : 0
+            opacity: root.expandMode ? 1 : 0
+
+            Behavior on scale {
+                enabled: Config.styling.animation.enabled && root.expandMode
+                NumberAnimation {
+                    duration: Config.styling.animation.calc(0.1)
+                    easing.type: Easing.Bezier
+                    easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                }
+            }
         }
 
         TapHandler {
@@ -58,12 +194,25 @@ Item {
         implicitHeight: root.height
         implicitWidth: root.height
 
+        HoverHandler {
+            id: hoverHandler
+        }
+
         Text {
             anchors.centerIn: parent
             text: workspace.id
             color: (Hyprland.focusedWorkspace?.id === workspace?.id) ? Config.styling.activeIndicator : Config.styling.text0
             font.bold: true
-            font.pixelSize: Math.round(root.height * (Hyprland.focusedWorkspace?.id === workspace?.id ? 0.75 : 0.5))
+            font.pixelSize: Math.round(root.height * (Hyprland.focusedWorkspace?.id === workspace?.id ? 0.75 : 0.5) * (hoverHandler.hovered ? (Hyprland.focusedWorkspace?.id === workspace?.id ? 1.2 : 1.5) : 1))
+
+            Behavior on font.pixelSize {
+                enabled: Config.styling.animation.enabled
+                NumberAnimation {
+                    duration: Config.styling.animation.calc(0.1)
+                    easing.type: Easing.Bezier
+                    easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                }
+            }
         }
 
         TapHandler {
@@ -77,12 +226,10 @@ Item {
 
     component WorkspaceToplevelOverview: Pill {
         id: pill
-        required property var workspace
+        property var workspace
 
         header: WorkspaceButton {
-            workspace: {
-                return pill.workspace;
-            }
+            workspace: pill.workspace
         }
 
         Item {
@@ -94,32 +241,6 @@ Item {
             width: implicitWidth
 
             readonly property var currentWorkspace: pill.workspace
-
-            property int activeWindowIndex: {
-                if (Hyprland.focusedWorkspace?.id !== currentWorkspace?.id)
-                    return -1;
-                const list = windowRepeater.model || [];
-                for (let i = 0; i < list.length; ++i) {
-                    if (list[i]?.activated)
-                        return i;
-                }
-                return -1;
-            }
-
-            property Item activeWindowItem: null
-
-            function updateActiveWindowItem() {
-                if (activeWindowIndex >= 0) {
-                    const item = windowRepeater.itemAt(activeWindowIndex);
-                    activeWindowItem = item || null;
-                } else {
-                    activeWindowItem = null;
-                }
-            }
-
-            onActiveWindowIndexChanged: updateActiveWindowItem()
-            onCurrentWorkspaceChanged: updateActiveWindowItem()
-            Component.onCompleted: updateActiveWindowItem()
 
             RowLayout {
                 id: windowRow
@@ -135,29 +256,6 @@ Item {
                         required property var modelData
                         toplevel: modelData
                     }
-
-                    onItemAdded: windowArea.updateActiveWindowItem()
-                    onItemRemoved: windowArea.updateActiveWindowItem()
-                }
-            }
-
-            Rectangle {
-                id: workspaceActiveIndicator
-                z: -1
-                height: Math.max(2, Math.round(root.height * 0.0625))
-                color: Config.styling.activeIndicator
-                width: windowArea.activeWindowItem ? windowArea.activeWindowItem.width : 0
-                x: windowArea.activeWindowItem ? windowArea.activeWindowItem.x : 0
-                y: windowRow.bottom - height
-                opacity: windowArea.activeWindowItem ? 1 : 0
-
-                Behavior on x {
-                    enabled: Config.styling.animation.enabled
-                    NumberAnimation {
-                        duration: Config.styling.animation.calc(0.1)
-                        easing.type: Easing.Bezier
-                        easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
-                    }
                 }
             }
         }
@@ -167,31 +265,18 @@ Item {
         id: row
         Repeater {
             id: workspaceRepeater
-            model: {
-                const defaultIds = [1, 2, 3, 4, 5];
-                const focusedId = Hyprland.focusedWorkspace?.id || 1;
-
-                let ids = [...defaultIds];
-                if (!ids.includes(focusedId)) {
-                    ids.push(focusedId);
-                }
-
-                return ids.map(id => {
-                    const ws = Hyprland.workspaces.values.find(w => w.id === id);
-
-                    return ws || {
-                        id: id,
-                        activate: () => {
-                            Hyprland.dispatch(`workspace ${id}`);
-                        }
-                    };
-                });
-            }
+            model: workspaceModel
 
             delegate: WorkspaceToplevelOverview {
-                required property var modelData
-                workspace: modelData
+                required property int workspaceId
                 contentAnimationBaseDuration: 0.15
+
+                Component.onCompleted: workspace = root.workspaceForId(workspaceId)
+                onWorkspaceIdChanged: workspace = root.workspaceForId(workspaceId)
+            }
+
+            onItemAdded: function (index, item) {
+                root.applyWorkspaceBinding(index);
             }
         }
         Component.onCompleted: {

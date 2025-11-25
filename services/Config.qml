@@ -83,6 +83,12 @@ Singleton {
         }
     }
 
+    PersistentProperties {
+        id: barObj
+        reloadableId: "persitentBar"
+    }
+
     readonly property PersistentProperties colors: colorsObj
     readonly property PersistentProperties styling: stylingObj
+    readonly property PersistentProperties bar: barObj
 }
