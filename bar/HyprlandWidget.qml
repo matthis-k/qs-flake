@@ -22,8 +22,6 @@ Item {
         implicitWidth: root.height
         width: implicitWidth
         height: implicitHeight
-        transformOrigin: Item.Center
-        scale: 1
 
         IconImage {
             property DesktopEntry entry: {
@@ -35,17 +33,6 @@ Item {
             anchors.centerIn: parent
             implicitSize: Math.round(root.height * 0.35) * 2
             source: Quickshell.iconPath(entry?.icon || "dialog-warning", "dialog-warning")
-        }
-
-        Rectangle {
-            id: activeIndicator
-            visible: inFocusedWorkspace && toplevel.activated
-            height: Math.max(2, Math.round(root.height * 0.0625))
-            color: Config.styling.activeIndicator
-
-            anchors.top: tl.top
-            anchors.left: tl.left
-            anchors.right: tl.right
         }
 
         TapHandler {
@@ -98,51 +85,79 @@ Item {
             }
         }
 
-        ListView {
-            id: windowList
+        Item {
+            id: windowArea
             Layout.alignment: Qt.AlignVCenter
-            Layout.preferredHeight: root.height
-            Layout.preferredWidth: Math.max(contentWidth, 0)
             implicitHeight: root.height
-            implicitWidth: contentWidth
-            height: root.height
+            implicitWidth: windowRow.implicitWidth
+            height: implicitHeight
             width: implicitWidth
-            spacing: Math.max(4, Math.round(root.height * 0.1))
-            orientation: ListView.Horizontal
-            interactive: false
-            boundsBehavior: Flickable.StopAtBounds
-            model: (workspace?.toplevels?.values || []).filter(t => t.title !== "Wayland to X Recording bridge — Xwayland Video Bridge")
 
-            delegate: Toplevel {
-                required property var modelData
-                toplevel: modelData
+            readonly property var currentWorkspace: pill.workspace
+
+            property int activeWindowIndex: {
+                if (Hyprland.focusedWorkspace?.id !== currentWorkspace?.id)
+                    return -1;
+                const list = windowRepeater.model || [];
+                for (let i = 0; i < list.length; ++i) {
+                    if (list[i]?.activated)
+                        return i;
+                }
+                return -1;
             }
 
-            add: Transition {
-                NumberAnimation {
-                    properties: "opacity,scale"
-                    from: 0.2
-                    to: 1
-                    duration: 200
-                    easing.type: Easing.OutCubic
+            property Item activeWindowItem: null
+
+            function updateActiveWindowItem() {
+                if (activeWindowIndex >= 0) {
+                    const item = windowRepeater.itemAt(activeWindowIndex);
+                    activeWindowItem = item || null;
+                } else {
+                    activeWindowItem = null;
                 }
             }
 
-            remove: Transition {
-                NumberAnimation {
-                    properties: "opacity,scale"
-                    from: 1
-                    to: 0
-                    duration: 160
-                    easing.type: Easing.InCubic
+            onActiveWindowIndexChanged: updateActiveWindowItem()
+            onCurrentWorkspaceChanged: updateActiveWindowItem()
+            Component.onCompleted: updateActiveWindowItem()
+
+            RowLayout {
+                id: windowRow
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                spacing: Math.max(4, Math.round(root.height * 0.1))
+
+                Repeater {
+                    id: windowRepeater
+                    model: (windowArea.currentWorkspace?.toplevels?.values || []).filter(t => t.title !== "Wayland to X Recording bridge — Xwayland Video Bridge")
+
+                    delegate: Toplevel {
+                        required property var modelData
+                        toplevel: modelData
+                    }
+
+                    onItemAdded: windowArea.updateActiveWindowItem()
+                    onItemRemoved: windowArea.updateActiveWindowItem()
                 }
             }
 
-            displaced: Transition {
-                NumberAnimation {
-                    properties: "x,y"
-                    duration: 160
-                    easing.type: Easing.OutCubic
+            Rectangle {
+                id: workspaceActiveIndicator
+                z: -1
+                height: Math.max(2, Math.round(root.height * 0.0625))
+                color: Config.styling.activeIndicator
+                width: windowArea.activeWindowItem ? windowArea.activeWindowItem.width : 0
+                x: windowArea.activeWindowItem ? windowArea.activeWindowItem.x : 0
+                y: windowRow.bottom - height
+                opacity: windowArea.activeWindowItem ? 1 : 0
+
+                Behavior on x {
+                    enabled: Config.styling.animation.enabled
+                    NumberAnimation {
+                        duration: Config.styling.animation.calc(0.1)
+                        easing.type: Easing.Bezier
+                        easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                    }
                 }
             }
         }
@@ -176,6 +191,7 @@ Item {
             delegate: WorkspaceToplevelOverview {
                 required property var modelData
                 workspace: modelData
+                contentAnimationBaseDuration: 0.15
             }
         }
         Component.onCompleted: {

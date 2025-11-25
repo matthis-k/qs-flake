@@ -8,6 +8,11 @@ Item {
     default property list<Item> children
     property Component header: null
 
+    property bool headerAnimationEnabled: false
+    property bool contentAnimationEnabled: Config.styling.animation.enabled
+    property real headerAnimationBaseDuration: 0.3
+    property real contentAnimationBaseDuration: 0.3
+
     property bool hasHeader: root.header != null
     property bool hasChildren: {
         for (let i = 0; i < root.children.length; ++i) {
@@ -49,7 +54,7 @@ Item {
         id: connector
         anchors {
             left: header.left
-            right: content.right
+            right: contentContainer.right
             top: parent.top
             bottom: parent.bottom
             rightMargin: root.hasChildren && content.childrenRect.width > 0 ? -root.radius : 0
@@ -67,6 +72,15 @@ Item {
         implicitHeight: Math.max(root.minimumHeight, root.headerContentImplicitHeight)
 
         implicitWidth: root.hasHeader ? Math.max(root.headerContentImplicitWidth, implicitHeight) : (root.radius - root.margin / 2)
+        width: implicitWidth
+        Behavior on width {
+            enabled: root.headerAnimationEnabled
+            NumberAnimation {
+                duration: Config.styling.animation.calc(root.headerAnimationBaseDuration)
+                easing.type: Easing.Bezier
+                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+            }
+        }
 
         radius: root.radius
         clip: true
@@ -91,12 +105,35 @@ Item {
         }
     }
 
-    RowLayout {
-        id: content
+    Item {
+        id: contentContainer
         anchors.left: header.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.leftMargin: root.hasChildren && content.childrenRect.width > 0 ? Math.min(root.radius, root.margin) : 0
-        data: root.children
+        clip: true
+
+        readonly property real targetWidth: Math.max(content.implicitWidth, 0)
+
+        width: targetWidth
+        implicitWidth: targetWidth
+
+        Behavior on width {
+            enabled: root.contentAnimationEnabled
+            NumberAnimation {
+                duration: Config.styling.animation.calc(root.contentAnimationBaseDuration)
+                easing.type: Easing.Bezier
+                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+            }
+        }
+
+        RowLayout {
+            id: content
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            width: implicitWidth
+            data: root.children
+        }
     }
 }

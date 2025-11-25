@@ -73,6 +73,14 @@ Singleton {
         property int margin: radius
 
         property double statusIconScaler: 0.8
+
+        readonly property QtObject animation: QtObject {
+            property double duration_multiplier: 1.0
+            readonly property bool enabled: duration_multiplier !== 0
+            function calc(baseDurationSeconds) {
+                return baseDurationSeconds * 1000 * (duration_multiplier || 0);
+            }
+        }
     }
 
     readonly property PersistentProperties colors: colorsObj
