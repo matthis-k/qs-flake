@@ -13,24 +13,41 @@ Item {
     id: root
     implicitWidth: root.height
     implicitHeight: root.height
+    readonly property real iconMargin: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
 
-    IconImage {
-        id: icon
+    Item {
+        id: iconWrapper
         anchors.fill: parent
-        anchors.margins: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
-        implicitSize: root.height
-        source: Quickshell.iconPath("system-shutdown-symbolic", "system-shutdown")
-    }
+        anchors.margins: iconMargin
+        transformOrigin: Item.Center
+        scale: hoverHandler.hovered ? 1.25 : 1
 
-    ColorOverlay {
-        anchors.fill: icon
-        color: Config.styling.critical
-        source: icon
+        Behavior on scale {
+            enabled: Config.styling.animation.enabled
+            NumberAnimation {
+                duration: Config.styling.animation.calc(0.1)
+                easing.type: Easing.Bezier
+                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+            }
+        }
+
+        IconImage {
+            id: icon
+            anchors.fill: parent
+            source: Quickshell.iconPath("system-shutdown-symbolic", "system-shutdown")
+        }
+
+        ColorOverlay {
+            anchors.fill: parent
+            color: Config.styling.critical
+            source: icon
+        }
     }
 
     property bool peeking: false
 
     HoverHandler {
+        id: hoverHandler
         onHoveredChanged: {
             if (hovered) {
                 peeking = true;

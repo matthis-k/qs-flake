@@ -14,6 +14,7 @@ Item {
     property UPowerDevice bat: UPower.displayDevice
     implicitWidth: height
     implicitHeight: height
+    readonly property real iconMargin: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
 
     property color stateColor: {
         let percentage = Math.floor(root.bat.percentage * 100);
@@ -42,10 +43,22 @@ Item {
 
     IconImage {
         id: icon
-        anchors.fill: parent
-        anchors.margins: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
+        anchors.centerIn: parent
+        width: Math.max(root.height - iconMargin * 2, 0)
+        height: width
         implicitSize: root.height
         source: Quickshell.iconPath(root.bat.iconName, "battery-full")
+        transformOrigin: Item.Center
+        scale: hoverHandler.hovered ? 1.25 : 1
+
+        Behavior on scale {
+            enabled: Config.styling.animation.enabled
+            NumberAnimation {
+                duration: Config.styling.animation.calc(0.1)
+                easing.type: Easing.Bezier
+                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+            }
+        }
     }
 
     ColorOverlay {
@@ -57,6 +70,7 @@ Item {
     property bool peeking: false
 
     HoverHandler {
+        id: hoverHandler
         onHoveredChanged: {
             if (hovered) {
                 peeking = true;

@@ -95,6 +95,17 @@ Item {
         implicitSize: Math.round(root.height * Config.styling.statusIconScaler / 2) * 2
         source: Quickshell.iconPath(volumeIcon(root.sink?.audio?.volume, root.sink?.audio?.muted), "multimedia-volume-control")
         opacity: root.hasSink ? 1.0 : 0.7
+        transformOrigin: Item.Center
+        scale: hoverHandler.hovered ? 1.25 : 1
+
+        Behavior on scale {
+            enabled: Config.styling.animation.enabled
+            NumberAnimation {
+                duration: Config.styling.animation.calc(0.1)
+                easing.type: Easing.Bezier
+                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+            }
+        }
     }
 
     ColorOverlay {
@@ -114,6 +125,7 @@ Item {
     property bool peeking: false
 
     HoverHandler {
+        id: hoverHandler
         onHoveredChanged: {
             if (hovered) {
                 peeking = true;
