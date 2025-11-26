@@ -6,6 +6,6 @@ import "managers"
 
 Scope {
     property BarManager bars: BarManager
-    property QuickSettingsManager qs: QuickSettingsManager
+    property PopupManager popups: PopupManager
     property AppLauncherManager appLauncher: AppLauncherManager
 }

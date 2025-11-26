@@ -9,10 +9,16 @@ import Quickshell.Services.Pipewire
 import "../services"
 import "../components"
 import "../managers"
+import "../quickSettings"
 
 Item {
     id: root
     implicitWidth: height
+
+    Component {
+        id: audioPopupComponent
+        AudioView {}
+    }
 
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property bool hasSink: !!sink && !!sink.audio
@@ -129,9 +135,9 @@ Item {
         onHoveredChanged: {
             if (hovered) {
                 peeking = true;
-                QuickSettingsManager.open("audio", peeking);
+                PopupManager.anchors.topRight.show(audioPopupComponent, { peeking: peeking });
             } else if (peeking) {
-                QuickSettingsManager.close(500);
+                PopupManager.anchors.topRight.hide(500);
             }
         }
     }
@@ -139,7 +145,7 @@ Item {
     TapHandler {
         onSingleTapped: {
             peeking = false;
-            QuickSettingsManager.toggle("audio", peeking);
+            PopupManager.anchors.topRight.toggle(audioPopupComponent, { peeking: peeking });
         }
     }
 }

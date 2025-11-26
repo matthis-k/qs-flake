@@ -8,11 +8,17 @@ import Qt5Compat.GraphicalEffects
 import "../services"
 import "../components"
 import "../managers"
+import "../quickSettings"
 
 Item {
     id: root
     property UPowerDevice bat: UPower.displayDevice
     implicitWidth: height
+
+    Component {
+        id: batteryPopupComponent
+        BatteryView {}
+    }
     implicitHeight: height
     readonly property real iconMargin: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
 
@@ -74,9 +80,9 @@ Item {
         onHoveredChanged: {
             if (hovered) {
                 peeking = true;
-                QuickSettingsManager.open("battery", peeking);
+                PopupManager.anchors.topRight.show(batteryPopupComponent, { peeking: peeking });
             } else if (peeking) {
-                QuickSettingsManager.close(500);
+                PopupManager.anchors.topRight.hide(500);
             }
         }
     }
@@ -84,7 +90,7 @@ Item {
     TapHandler {
         onSingleTapped: {
             peeking = false;
-            QuickSettingsManager.toggle("battery", peeking);
+            PopupManager.anchors.topRight.toggle(batteryPopupComponent, { peeking: peeking });
         }
     }
 }

@@ -5,7 +5,7 @@ import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
-import "../services" 1.0
+import "../services"
 import "../components"
 
 Item {
@@ -21,56 +21,147 @@ Item {
         id: option
         required property list<string> command
         required property string icon
-        required property color icon_color
+        required property color optionColor
         required property string text
-        required property string subtext
-        implicitWidth: row.implicitWidth
-        implicitHeight: row.implicitHeight
+
+        readonly property int iconSize: 32
+        readonly property int gutter: 12
+        readonly property int accentMaxWidth: 6
+        readonly property int trailingPadding: 16
+        implicitWidth: accentMaxWidth + iconSize + gutter + (label ? label.implicitWidth : 0) + trailingPadding
+        implicitHeight: iconSize
+
         HoverHandler {
-            id: hhLogout
+            id: hoverHandler
         }
 
         TapHandler {
             acceptedButtons: Qt.LeftButton
             cursorShape: Qt.PointingHandCursor
+            gesturePolicy: TapHandler.ReleaseWithinBounds
             onTapped: runner.exec({
                 command
             })
         }
 
-        Rectangle {
-            id: bg
+        Item {
+            id: visual
             anchors.fill: parent
-            radius: 8
-            color: hhLogout.hovered ? Config.styling.bg4 : "transparent"
-        }
 
-        RowLayout {
-            id: row
-            spacing: 8
-            ColorOverlay {
-                id: icon
-                implicitWidth: 36
-                implicitHeight: 36
-                color: option.icon_color
-                source: IconImage {
-                    implicitSize: 36
-                    source: Quickshell.iconPath(option.icon)
+            Rectangle {
+                id: bg
+                anchors.fill: parent
+                color: option.optionColor
+                opacity: hoverHandler.hovered ? 0.2 : 0
+
+                Behavior on opacity {
+                    enabled: Config.styling.animation.enabled
+                    NumberAnimation {
+                        duration: Config.styling.animation.calc(0.1)
+                        easing.type: Easing.Bezier
+                        easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                    }
                 }
             }
-            ColumnLayout {
-                id: texts
-                spacing: 0
-                Text {
-                    text: option.text
-                    color: Config.styling.text0
-                    font.bold: true
-                    font.pixelSize: 16
+
+            Rectangle {
+                id: accent
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: hoverHandler.hovered ? accentMaxWidth : 0
+                color: option.optionColor
+                opacity: hoverHandler.hovered ? 1 : 0
+
+                Behavior on width {
+                    enabled: Config.styling.animation.enabled
+                    NumberAnimation {
+                        duration: Config.styling.animation.calc(0.1)
+                        easing.type: Easing.Bezier
+                        easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                    }
                 }
-                Text {
-                    text: option.subtext
-                    color: Config.styling.text2
-                    font.pixelSize: 12
+                Behavior on opacity {
+                    enabled: Config.styling.animation.enabled
+                    NumberAnimation {
+                        duration: Config.styling.animation.calc(0.1)
+                        easing.type: Easing.Bezier
+                        easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                    }
+                }
+            }
+
+            RowLayout {
+                id: row
+                anchors.fill: parent
+                anchors.leftMargin: accentMaxWidth + gutter
+                anchors.rightMargin: trailingPadding
+                spacing: gutter
+
+                Item {
+                    id: iconWrapper
+                    Layout.preferredWidth: iconSize
+                    Layout.minimumWidth: iconSize
+                    Layout.maximumWidth: iconSize
+                    Layout.preferredHeight: iconSize
+                    Layout.alignment: Qt.AlignVCenter
+
+                    Item {
+                        id: iconContent
+                        width: iconSize
+                        height: iconSize
+                        anchors.centerIn: parent
+                        transformOrigin: Item.Center
+                        scale: hoverHandler.hovered ? 1 : 0.8
+
+                        Behavior on scale {
+                            enabled: Config.styling.animation.enabled
+                            NumberAnimation {
+                                duration: Config.styling.animation.calc(0.1)
+                                easing.type: Easing.Bezier
+                                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                            }
+                        }
+
+                        ColorOverlay {
+                            anchors.fill: parent
+                            color: option.optionColor
+                            source: IconImage {
+                                anchors.fill: parent
+                                implicitSize: iconSize
+                                source: Quickshell.iconPath(option.icon)
+                                smooth: true
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: textWrapper
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    implicitWidth: label.implicitWidth
+                    implicitHeight: label.implicitHeight
+
+                    Text {
+                        id: label
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: option.text
+                        color: Config.styling.text0
+                        font.bold: true
+                        font.pixelSize: 24
+                        transformOrigin: Item.Center
+                        scale: hoverHandler.hovered ? 1 : 0.8
+
+                        Behavior on scale {
+                            enabled: Config.styling.animation.enabled
+                            NumberAnimation {
+                                duration: Config.styling.animation.calc(0.1)
+                                easing.type: Easing.Bezier
+                                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -83,36 +174,32 @@ Item {
         PowerOption {
             Layout.fillWidth: true
             command: ["uwsm", "stop"]
-            icon_color: Config.colors.yellow
+            optionColor: Config.colors.yellow
             icon: "system-log-out-symbolic"
             text: "Logout"
-            subtext: "End current session"
         }
 
         PowerOption {
             Layout.fillWidth: true
             command: ["systemctl", "hibernate"]
-            icon_color: Config.colors.teal
+            optionColor: Config.colors.sapphire
             icon: "system-suspend-hibernate-symbolic"
             text: "Hibernate"
-            subtext: "Save to disk"
         }
 
         PowerOption {
             Layout.fillWidth: true
             command: ["systemctl", "reboot"]
-            icon_color: Config.styling.warning
+            optionColor: Config.colors.peach
             icon: "system-reboot-symbolic"
             text: "Reboot"
-            subtext: "Restart system"
         }
         PowerOption {
             Layout.fillWidth: true
             command: ["systemctl", "poweroff"]
-            icon_color: Config.styling.critical
-            icon: "system-reboot-symbolic"
-            text: "Power off"
-            subtext: "Shut down system"
+            optionColor: Config.colors.red
+            icon: "system-shutdown-symbolic"
+            text: "Shutdown"
         }
     }
 }

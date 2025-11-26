@@ -7,9 +7,15 @@ import Quickshell.Widgets
 import "../components"
 import "../services"
 import "../managers"
+import "../quickSettings"
 
 Item {
     id: root
+
+    Component {
+        id: networkPopupComponent
+        NetworkView {}
+    }
 
     implicitWidth: root.height
     implicitHeight: root.height
@@ -42,9 +48,11 @@ Item {
         onHoveredChanged: {
             if (hovered) {
                 peeking = true;
-                QuickSettingsManager.open("network", peeking);
+                PopupManager.anchors.topRight.show(networkPopupComponent, {
+                    peeking: peeking
+                });
             } else if (peeking) {
-                QuickSettingsManager.close(500);
+                PopupManager.anchors.topRight.hide(500);
             }
         }
     }
@@ -52,7 +60,9 @@ Item {
     TapHandler {
         onSingleTapped: {
             peeking = false;
-            QuickSettingsManager.toggle("network", peeking);
+            PopupManager.anchors.topRight.toggle(networkPopupComponent, {
+                peeking: peeking
+            });
         }
     }
 }

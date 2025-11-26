@@ -74,7 +74,7 @@ PanelWindow {
         HoverHandler {
             onHoveredChanged: {
                 if (hovered) {
-                    QuickSettingsManager.qs.closeTimer.stop();
+                    PopupManager.anchors.topRight.cancelHide();
                 }
             }
         }
@@ -107,7 +107,7 @@ PanelWindow {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         height: 1
-        implicitWidth: 1920 - (QuickSettingsManager.qs.visible * QuickSettingsManager.qs.implicitWidth)
+        implicitWidth: 1920 - (PopupManager.anchors.topRight.visible ? PopupManager.anchors.topRight.width : 0)
 
         color: Config.styling.primaryAccent
     }

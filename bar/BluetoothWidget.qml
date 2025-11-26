@@ -9,11 +9,17 @@ import Qt5Compat.GraphicalEffects
 import "../services"
 import "../components"
 import "../managers"
+import "../quickSettings"
 
 Item {
     id: root
     implicitWidth: height
     implicitHeight: height
+
+    Component {
+        id: bluetoothPopupComponent
+        BluetoothView {}
+    }
 
     property bool expanded: false
     property string expandedAddr: ""
@@ -76,9 +82,9 @@ Item {
         onHoveredChanged: {
             if (hovered) {
                 peeking = true;
-                QuickSettingsManager.open("bluetooth", peeking);
+                PopupManager.anchors.topRight.show(bluetoothPopupComponent, { peeking: peeking });
             } else if (peeking) {
-                QuickSettingsManager.close(500);
+                PopupManager.anchors.topRight.hide(500);
             }
         }
     }
@@ -86,7 +92,7 @@ Item {
     TapHandler {
         onSingleTapped: {
             keepOpen = false;
-            QuickSettingsManager.toggle("bluetooth", peeking);
+            PopupManager.anchors.topRight.toggle(bluetoothPopupComponent, { peeking: peeking });
         }
     }
 }
