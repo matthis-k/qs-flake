@@ -119,14 +119,47 @@ Item {
 
         property bool inFocusedWorkspace: Hyprland.focusedWorkspace && toplevel.workspace && Hyprland.focusedWorkspace.id === toplevel.workspace.id
         readonly property bool isActiveOnFocusedWorkspace: inFocusedWorkspace && toplevel?.activated
+        readonly property bool isUrgent: !!toplevel?.urgent
 
         implicitHeight: root.height
         implicitWidth: root.height
         width: implicitWidth
         height: implicitHeight
+        Layout.fillHeight: true
 
         HoverHandler {
             id: toplevelHover
+        }
+
+        Rectangle {
+            id: activeHighlight
+            anchors.fill: parent
+            readonly property bool showActive: tl.isActiveOnFocusedWorkspace
+            readonly property bool showUrgent: !showActive && tl.isUrgent
+            readonly property bool shouldShow: showActive || showUrgent
+            color: showActive ? Config.styling.activeIndicator : Config.styling.urgent
+            opacity: shouldShow ? 0.2 : 0
+            scale: shouldShow ? 1 : 0.85
+            transformOrigin: Item.Center
+            z: -1
+
+            Behavior on opacity {
+                enabled: Config.styling.animation.enabled
+                NumberAnimation {
+                    duration: Config.styling.animation.calc(0.12)
+                    easing.type: Easing.Bezier
+                    easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                }
+            }
+
+            Behavior on scale {
+                enabled: Config.styling.animation.enabled
+                NumberAnimation {
+                    duration: Config.styling.animation.calc(0.12)
+                    easing.type: Easing.Bezier
+                    easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                }
+            }
         }
 
         IconImage {
@@ -152,7 +185,7 @@ Item {
         }
 
         Rectangle {
-            id: expandIndicator
+            id: activeIndicator
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             height: Math.max(2, Math.round(root.height * 0.0625))
@@ -234,7 +267,7 @@ Item {
 
         Item {
             id: windowArea
-            Layout.alignment: Qt.AlignVCenter
+            Layout.fillHeight: true
             implicitHeight: root.height
             implicitWidth: windowRow.implicitWidth
             height: implicitHeight
@@ -244,7 +277,8 @@ Item {
 
             RowLayout {
                 id: windowRow
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
                 anchors.left: parent.left
                 spacing: Math.max(4, Math.round(root.height * 0.1))
 

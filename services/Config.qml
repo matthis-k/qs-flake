@@ -62,7 +62,8 @@ Singleton {
 
         property color good: colorsObj.green
         property color normal: colorsObj.text
-        property color warning: colorsObj.peach
+        property color warning: colorsObj.yellow
+        property color urgent: colorsObj.yellow
         property color critical: colorsObj.red
 
         property color bluetooth: colorsObj.blue
