@@ -12,7 +12,7 @@ with lib;
 let
   cfg = config.services.quickde;
 
-  qs = quickshell.packages.${pkgs.system}.default;
+  qs = quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default;
   configDir = ./.;
   quickde = pkgs.writeShellScriptBin "quickde" ''
     exec ${qs}/bin/quickshell -p ${configDir} $@
@@ -87,4 +87,3 @@ in
       };
   };
 }
-

@@ -18,7 +18,7 @@
       system:
       let
         pkgs = import nixpkgs { inherit system; };
-        qs = quickshell.packages.${system}.default;
+        qs = quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default;
         configDir = ./.;
         quickde = pkgs.writeShellScriptBin "quickde" ''
           exec ${qs}/bin/quickshell -p ${configDir} $@
