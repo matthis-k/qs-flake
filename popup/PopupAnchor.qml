@@ -54,8 +54,13 @@ Item {
     function assignComponent(component, properties) {
         if (!component)
             return;
-        loader.setSourceComponent(component, properties || {});
+        loader.active = false;
+        loader.sourceComponent = component;
         loader.active = true;
+        if (properties && loader.item) {
+            for (const key of Object.keys(properties))
+                loader.item[key] = properties[key];
+        }
     }
 
     function normalizeOptions(options) {
@@ -156,8 +161,8 @@ Item {
             }
         }
 
-        readonly property real contentImplicitWidth: loader.item ? ((loader.item.implicitWidth && loader.item.implicitWidth > 0 ? loader.item.implicitWidth : loader.item.width) || 0) : 0
-        readonly property real contentImplicitHeight: loader.item ? ((loader.item.implicitHeight && loader.item.implicitHeight > 0 ? loader.item.implicitHeight : loader.item.height) || 0) : 0
+        readonly property real contentImplicitWidth: loader.item ? Math.max(loader.item.implicitWidth || 0, 0) : 0
+        readonly property real contentImplicitHeight: loader.item ? Math.max(loader.item.implicitHeight || 0, 0) : 0
 
         implicitWidth: Math.max(contentImplicitWidth, 0) + padding * 2
         implicitHeight: Math.max(contentImplicitHeight, 0) + padding * 2

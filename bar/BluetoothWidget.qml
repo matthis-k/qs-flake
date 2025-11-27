@@ -74,7 +74,6 @@ Item {
         }
     }
 
-
     property bool peeking: false
 
     HoverHandler {
@@ -82,7 +81,9 @@ Item {
         onHoveredChanged: {
             if (hovered) {
                 peeking = true;
-                PopupManager.anchors.topRight.show(bluetoothPopupComponent, { peeking: peeking });
+                PopupManager.anchors.topRight.show(bluetoothPopupComponent, {
+                    peeking: peeking
+                });
             } else if (peeking) {
                 PopupManager.anchors.topRight.hide(500);
             }
@@ -91,8 +92,10 @@ Item {
 
     TapHandler {
         onSingleTapped: {
-            keepOpen = false;
-            PopupManager.anchors.topRight.toggle(bluetoothPopupComponent, { peeking: peeking });
+            peeking = false;
+            PopupManager.anchors.topRight.toggle(bluetoothPopupComponent, {
+                peeking: peeking
+            });
         }
     }
 }
