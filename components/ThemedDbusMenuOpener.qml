@@ -35,6 +35,7 @@ Item {
         if (!popupAnchor || !menu)
             return;
         const options = {
+            autoClose: true,
             properties: {
                 menuHandle: menu,
                 anchorController: popupAnchor
@@ -44,6 +45,20 @@ Item {
             popupAnchor.toggle(contentComponent, options);
         else
             popupAnchor.show(contentComponent, options);
+    }
+
+    function peek() {
+        if (!popupAnchor || !menu)
+            return;
+        const options = {
+            peeking: true,
+            autoClose: true,
+            properties: {
+                menuHandle: menu,
+                anchorController: popupAnchor
+            }
+        };
+        popupAnchor.show(contentComponent, options);
     }
 
     function close(timeout) {

@@ -1,4 +1,4 @@
-import QtQuick
+ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.SystemTray
@@ -8,38 +8,110 @@ import "../components"
 import "../services"
 import "../managers"
 
-Item {
+Pill {
     id: root
-    implicitHeight: parent.height
-    implicitWidth: trayList.contentWidth + trayPadding * 2
-    property int trayPadding: 4
+    property bool expanded: true
+    headerBackground: "transparent"
+    contentBackground: "transparent"
+
+    header: Item {
+        implicitWidth: root.height
+        implicitHeight: root.height
+        readonly property real iconMargin: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
+
+        HoverHandler {
+            id: headerHover
+        }
+
+        IconImage {
+            id: icon
+            anchors.centerIn: parent
+            width: Math.max(root.height - iconMargin * 2, 0)
+            height: width
+            implicitSize: root.height
+            source: Quickshell.iconPath(root.expanded ? "pan-end" : "pan-start")
+            transformOrigin: Item.Center
+            scale: headerHover.hovered ? 1.25 : 1
+
+            Behavior on scale {
+                enabled: Config.styling.animation.enabled
+                NumberAnimation {
+                    duration: Config.styling.animation.calc(0.1)
+                    easing.type: Easing.Bezier
+                    easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                }
+            }
+        }
+
+        ColorOverlay {
+            anchors.fill: icon
+            color: Config.styling.text0
+            source: icon
+        }
+
+        TapHandler {
+            target: parent
+            acceptedButtons: Qt.LeftButton
+            onTapped: root.expanded = !root.expanded
+        }
+    }
 
     Item {
         id: trayContainer
-        anchors.fill: parent
-        anchors.margins: trayPadding
-        clip: false
+        Layout.alignment: Qt.AlignVCenter
+        Layout.preferredHeight: root.height
+        implicitHeight: root.height
+        readonly property real expandedWidth: trayList ? Math.max(trayList.contentWidth, 0) : 0
+        width: root.expanded ? expandedWidth : 0
+        Layout.preferredWidth: width
+        opacity: root.expanded ? 1 : 0
+        scale: root.expanded ? 1 : 0.92
+        clip: true
+
+        Behavior on width {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 140
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        Behavior on scale {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutCubic
+            }
+        }
 
         ListView {
             id: trayList
             anchors.fill: parent
+            anchors.margins: 2
             orientation: ListView.Horizontal
             spacing: 6
             boundsBehavior: Flickable.StopAtBounds
             interactive: false
             model: SystemTray.items
-            implicitHeight: root.height - trayPadding * 2
+            implicitHeight: root.height
             implicitWidth: contentWidth
             clip: false
 
             delegate: Item {
                 readonly property var tray: modelData
 
-                width: root.height - trayPadding * 2
-                height: width
+                width: 24
+                height: 24
                 transformOrigin: Item.Center
                 opacity: 1
                 scale: 1
+
+                property bool peeking: false
 
                 ThemedDbusMenuOpener {
                     id: menuAnchor
@@ -55,6 +127,14 @@ Item {
 
                 HoverHandler {
                     id: trayHover
+                    onHoveredChanged: {
+                        if (hovered && tray.hasMenu) {
+                            peeking = true;
+                            menuAnchor.peek();
+                        } else if (peeking) {
+                            menuAnchor.close(500);
+                        }
+                    }
                 }
 
                 Item {
@@ -74,8 +154,8 @@ Item {
 
                     IconImage {
                         anchors.fill: parent
-                        anchors.margins: Math.max(4, trayPadding)
-                        implicitSize: Math.min(root.height - trayPadding * 2, 24)
+                        anchors.margins: 4
+                        implicitSize: Math.min(root.height - 8, 24)
                         source: tray.icon
                         mipmap: true
                     }
@@ -84,6 +164,7 @@ Item {
                 TapHandler {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                     onTapped: (point, button) => {
+                        peeking = false;
                         if (button === Qt.LeftButton) {
                             if (tray.onlyMenu && tray.hasMenu)
                                 showTrayMenu(false);
