@@ -1,6 +1,5 @@
 import Quickshell
 import Quickshell.Widgets
-import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import "../services"
@@ -70,6 +69,7 @@ PanelWindow {
         anchors.bottom: sep.top
         anchors.topMargin: (barHeight / 8) - 1
         anchors.bottomMargin: (barHeight / 8) + 1
+        spacing: 0
 
         HoverHandler {
             onHoveredChanged: {
@@ -79,11 +79,13 @@ PanelWindow {
             }
         }
 
-        Pill {
+        SystemTrayWidget {
+            Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
             Layout.fillHeight: true
-            SystemTrayWidget {
-                Layout.fillHeight: true
-            }
+        }
+        Pill {
+            id: statusIcons
+            Layout.fillHeight: true
             VolumeWidget {
                 Layout.fillHeight: true
             }

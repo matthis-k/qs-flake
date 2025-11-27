@@ -4,7 +4,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Bluetooth
-import "../services" 1.0
+import "../services"
 
 Item {
     id: root
@@ -57,7 +57,8 @@ Item {
             Switch {
                 visible: !!adapter
                 checked: adapter && adapter.enabled
-                onToggled: if (adapter) adapter.enabled = checked
+                onToggled: if (adapter)
+                    adapter.enabled = checked
             }
         }
 

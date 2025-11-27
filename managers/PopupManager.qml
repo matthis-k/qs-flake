@@ -6,7 +6,7 @@ import "../popup"
 Singleton {
     id: root
 
-        readonly property PopupPanel panel: PopupPanel {}
+    readonly property PopupPanel panel: PopupPanel {}
 
     readonly property QtObject anchors: QtObject {
         readonly property QtObject topLeft: root.panel.topLeft

@@ -3,7 +3,7 @@ import QtQuick.Shapes
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
-import "../services" 1.0
+import "../services"
 import "../managers/"
 import "."
 
@@ -103,19 +103,19 @@ PanelWindow {
         color: Config.styling.bg0
     }
 
-        Item {
-            id: bgTopLeftEntry
-            width: cornerRadius
-            height: cornerRadius
-            anchors.left: quickSettings.left
-            anchors.top: quickSettings.top
+    Item {
+        id: bgTopLeftEntry
+        width: cornerRadius
+        height: cornerRadius
+        anchors.left: quickSettings.left
+        anchors.top: quickSettings.top
 
-            Shape {
-                anchors.fill: parent
+        Shape {
+            anchors.fill: parent
 
-                ShapePath {
-                    strokeWidth: 0
-                    fillColor: Config.styling.bg0
+            ShapePath {
+                strokeWidth: 0
+                fillColor: Config.styling.bg0
                 fillRule: ShapePath.OddEvenFill
 
                 startX: 0
@@ -230,19 +230,19 @@ PanelWindow {
         anchors.bottom: bgBottom.bottom
     }
 
-        Item {
-            id: bottomRightExit
-            width: cornerRadius
-            height: cornerRadius
-            anchors.right: bgBottom.right
-            anchors.top: bgBottom.bottom
+    Item {
+        id: bottomRightExit
+        width: cornerRadius
+        height: cornerRadius
+        anchors.right: bgBottom.right
+        anchors.top: bgBottom.bottom
 
-            Shape {
-                anchors.fill: parent
+        Shape {
+            anchors.fill: parent
 
-                ShapePath {
-                    strokeWidth: 0
-                    fillColor: Config.styling.bg0
+            ShapePath {
+                strokeWidth: 0
+                fillColor: Config.styling.bg0
                 fillRule: ShapePath.OddEvenFill
 
                 startX: 0

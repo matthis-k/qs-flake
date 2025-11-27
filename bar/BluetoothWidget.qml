@@ -2,8 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
-import Quickshell.Io
-import Quickshell.Widgets
 import Quickshell.Bluetooth
 import Qt5Compat.GraphicalEffects
 import "../services"
@@ -22,7 +20,6 @@ Item {
     }
 
     property bool expanded: false
-    property string expandedAddr: ""
 
     readonly property var adapter: Bluetooth.defaultAdapter
     readonly property bool btOn: !!adapter && adapter.enabled
@@ -43,59 +40,11 @@ Item {
             return "bluetooth-searching-symbolic";
         return "bluetooth-symbolic";
     }
-    Item {
-        id: iconWrapper
+
+    StatusIcon {
         anchors.fill: parent
-        anchors.margins: iconMargin
-        transformOrigin: Item.Center
-        scale: hoverHandler.hovered ? 1.25 : 1
-
-        Behavior on scale {
-            enabled: Config.styling.animation.enabled
-            NumberAnimation {
-                duration: Config.styling.animation.calc(0.1)
-                easing.type: Easing.Bezier
-                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
-            }
-        }
-
-        IconImage {
-            id: icon
-            anchors.fill: parent
-            source: Quickshell.iconPath(btIconName(), "bluetooth-symbolic")
-            opacity: btOn ? 1.0 : 0.7
-            mipmap: true
-        }
-
-        ColorOverlay {
-            anchors.fill: parent
-            color: btOn ? Config.styling.primaryAccent : Config.styling.critical
-            source: icon
-        }
-    }
-
-    property bool peeking: false
-
-    HoverHandler {
-        id: hoverHandler
-        onHoveredChanged: {
-            if (hovered) {
-                peeking = true;
-                PopupManager.anchors.topRight.show(bluetoothPopupComponent, {
-                    peeking: peeking
-                });
-            } else if (peeking) {
-                PopupManager.anchors.topRight.hide(500);
-            }
-        }
-    }
-
-    TapHandler {
-        onSingleTapped: {
-            peeking = false;
-            PopupManager.anchors.topRight.toggle(bluetoothPopupComponent, {
-                peeking: peeking
-            });
-        }
+        iconName: btIconName()
+        overlayColor: btOn ? Config.styling.primaryAccent : Config.styling.critical
+        popupComponent: bluetoothPopupComponent
     }
 }

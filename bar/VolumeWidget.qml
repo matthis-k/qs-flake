@@ -3,8 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import Quickshell
-import Quickshell.Io
-import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 import "../services"
 import "../components"
@@ -13,7 +11,6 @@ import "../quickSettings"
 
 Item {
     id: root
-    implicitWidth: height
 
     Component {
         id: audioPopupComponent
@@ -44,7 +41,6 @@ Item {
             return Config.styling.critical;
         if ((vol ?? 0) === 0.0)
             return Config.styling.warning;
-        return Config.styling.text0;
     }
 
     function clampVol(v) {
@@ -58,12 +54,12 @@ Item {
     function adjustMaster(event) {
         if (!root.hasSink)
             return;
-        root.sink.audio.volume = clampVol(root.sink.audio.volume + wheelDeltaToStep(event));
+        root.sink.audio.volume = root.clampVol(root.sink.audio.volume + wheelDeltaToStep(event));
     }
     function adjustStream(stream, event) {
         if (!stream?.audio)
             return;
-        stream.audio.volume = clampVol(stream.audio.volume + wheelDeltaToStep(event));
+        stream.audio.volume = root.clampVol(stream.audio.volume + wheelDeltaToStep(event));
     }
 
     function streamDisplayName(s) {
@@ -94,58 +90,18 @@ Item {
             return objs;
         }
     }
-    IconImage {
-        id: icon
-        anchors.centerIn: parent
-        anchors.margins: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
-        implicitSize: Math.round(root.height * Config.styling.statusIconScaler / 2) * 2
-        source: Quickshell.iconPath(volumeIcon(root.sink?.audio?.volume, root.sink?.audio?.muted), "multimedia-volume-control")
-        opacity: root.hasSink ? 1.0 : 0.7
-        transformOrigin: Item.Center
-        scale: hoverHandler.hovered ? 1.25 : 1
-
-        Behavior on scale {
-            enabled: Config.styling.animation.enabled
-            NumberAnimation {
-                duration: Config.styling.animation.calc(0.1)
-                easing.type: Easing.Bezier
-                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
-            }
-        }
-    }
-
-    ColorOverlay {
-        anchors.fill: icon
-        color: overlayColor(root.sink?.audio?.volume, root.sink?.audio?.muted)
-        source: icon
+    StatusIcon {
+        anchors.fill: parent
+        iconName: root.volumeIcon(root.sink?.audio?.volume, root.sink?.audio?.muted)
+        overlayColor: root.overlayColor(root.sink?.audio?.volume, root.sink?.audio?.muted)
+        popupComponent: audioPopupComponent
     }
 
     WheelHandler {
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
         onWheel: {
-            adjustMaster(event);
+            root.adjustMaster(event);
             event.accepted = true;
-        }
-    }
-
-    property bool peeking: false
-
-    HoverHandler {
-        id: hoverHandler
-        onHoveredChanged: {
-            if (hovered) {
-                peeking = true;
-                PopupManager.anchors.topRight.show(audioPopupComponent, { peeking: peeking });
-            } else if (peeking) {
-                PopupManager.anchors.topRight.hide(500);
-            }
-        }
-    }
-
-    TapHandler {
-        onSingleTapped: {
-            peeking = false;
-            PopupManager.anchors.topRight.toggle(audioPopupComponent, { peeking: peeking });
         }
     }
 }

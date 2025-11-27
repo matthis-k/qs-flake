@@ -4,7 +4,7 @@ import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import "../services" 1.0
+import "../services"
 
 Item {
     id: root

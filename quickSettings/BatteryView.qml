@@ -1,10 +1,11 @@
-import QtQuick
-import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
-import Quickshell
-import Quickshell.Widgets
-import Quickshell.Services.UPower
-import "../services" 1.0
+ import QtQuick
+ import QtQuick.Layouts
+ import Qt5Compat.GraphicalEffects
+ import Quickshell
+ import Quickshell.Widgets
+ import Quickshell.Services.UPower
+
+ import "../services"
 
 Item {
     id: root
@@ -82,7 +83,6 @@ Item {
 
         MouseArea {
             id: powerProfileArea
-            hoverEnabled: false
             cursorShape: Qt.PointingHandCursor
             Layout.fillWidth: true
             Layout.preferredHeight: 40
@@ -100,14 +100,17 @@ Item {
                 PowerProfiles.profile = order[nextIndex];
             }
 
-            onWheel: {
-                accumulatedScroll += wheel.angleDelta.y;
-                if (accumulatedScroll >= scrollThreshold) {
-                    rotateProfile(-1);
-                    accumulatedScroll = 0;
-                } else if (accumulatedScroll <= -scrollThreshold) {
-                    rotateProfile(+1);
-                    accumulatedScroll = 0;
+            WheelHandler {
+                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                onWheel: {
+                    powerProfileArea.accumulatedScroll += wheel.angleDelta.y;
+                    if (powerProfileArea.accumulatedScroll >= powerProfileArea.scrollThreshold) {
+                        powerProfileArea.rotateProfile(+1);
+                        powerProfileArea.accumulatedScroll = 0;
+                    } else if (powerProfileArea.accumulatedScroll <= -powerProfileArea.scrollThreshold) {
+                        powerProfileArea.rotateProfile(-1);
+                        powerProfileArea.accumulatedScroll = 0;
+                    }
                 }
             }
 
@@ -120,15 +123,15 @@ Item {
                 ColorOverlay {
                     id: powerProfileIcon2
                     property string iconName: ({
-                            [PowerProfile.Performance]: "power-profile-performance-symbolic",
-                            [PowerProfile.Balanced]: "power-profile-balanced-symbolic",
-                            [PowerProfile.PowerSaver]: "power-profile-power-saver-symbolic"
-                        })[PowerProfiles.profile]
+                                [PowerProfile.Performance]: "power-profile-performance-symbolic",
+                                [PowerProfile.Balanced]: "power-profile-balanced-symbolic",
+                                [PowerProfile.PowerSaver]: "power-profile-power-saver-symbolic"
+                            })[PowerProfiles.profile]
                     color: ({
-                            [PowerProfile.Performance]: Config.styling.critical,
-                            [PowerProfile.Balanced]: Config.colors.yellow,
-                            [PowerProfile.PowerSaver]: Config.styling.good
-                        })[PowerProfiles.profile]
+                                [PowerProfile.Performance]: Config.styling.critical,
+                                [PowerProfile.Balanced]: Config.colors.yellow,
+                                [PowerProfile.PowerSaver]: Config.styling.good
+                            })[PowerProfiles.profile]
                     implicitWidth: 32
                     implicitHeight: 32
                     source: IconImage {

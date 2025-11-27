@@ -1,8 +1,6 @@
 import QtQuick
-import QtQuick
 import Quickshell
 import "./"
-
 
 PanelWindow {
     id: root
@@ -39,15 +37,33 @@ PanelWindow {
     Region {
         id: maskRegion
 
-        Region { item: topLeftAnchor.maskItem }
-        Region { item: topCenterAnchor.maskItem }
-        Region { item: topRightAnchor.maskItem }
-        Region { item: middleLeftAnchor.maskItem }
-        Region { item: middleCenterAnchor.maskItem }
-        Region { item: middleRightAnchor.maskItem }
-        Region { item: bottomLeftAnchor.maskItem }
-        Region { item: bottomCenterAnchor.maskItem }
-        Region { item: bottomRightAnchor.maskItem }
+        Region {
+            item: topLeftAnchor.maskItem
+        }
+        Region {
+            item: topCenterAnchor.maskItem
+        }
+        Region {
+            item: topRightAnchor.maskItem
+        }
+        Region {
+            item: middleLeftAnchor.maskItem
+        }
+        Region {
+            item: middleCenterAnchor.maskItem
+        }
+        Region {
+            item: middleRightAnchor.maskItem
+        }
+        Region {
+            item: bottomLeftAnchor.maskItem
+        }
+        Region {
+            item: bottomCenterAnchor.maskItem
+        }
+        Region {
+            item: bottomRightAnchor.maskItem
+        }
     }
 
     PopupAnchor {

@@ -133,6 +133,7 @@ Item {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: implicitWidth
+            spacing: 0
             data: root.children
         }
     }

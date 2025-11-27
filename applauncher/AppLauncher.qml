@@ -5,8 +5,6 @@ import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import Qt.labs.qmlmodels
-import QtQml.Models
 import "../services"
 import "../components"
 
@@ -100,13 +98,11 @@ PanelWindow {
                 anchors.fill: parent
                 anchors.leftMargin: 16
                 anchors.rightMargin: 16
-                verticalAlignment: TextInput.AlignVCenter
                 color: Config.styling.text0
                 selectionColor: Config.colors.sapphire
                 selectedTextColor: Config.styling.bg2
                 font.pixelSize: 14
                 focus: true
-                echoMode: TextInput.Normal
 
                 onTextChanged: {
                     appLauncherWin.pointer = text;
@@ -150,8 +146,6 @@ PanelWindow {
 
                 cellWidth: gridWrapper.cw
                 cellHeight: gridWrapper.ch
-                interactive: true
-                boundsBehavior: Flickable.StopAtBounds
                 snapMode: GridView.SnapToRow
                 clip: true
 
@@ -202,7 +196,6 @@ PanelWindow {
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
                             elide: Text.ElideRight
-                            wrapMode: Text.NoWrap
                         }
 
                         Text {
@@ -213,7 +206,6 @@ PanelWindow {
                             color: Config.styling.text1
                             font.pixelSize: 11
                             horizontalAlignment: Text.AlignHCenter
-                            wrapMode: Text.NoWrap
                             elide: Text.ElideRight
                         }
                     }

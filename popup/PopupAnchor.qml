@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick
 import "../services"
 
 Item {
@@ -20,7 +19,6 @@ Item {
     property int defaultHoverCloseDelay: 500
     property int hoverCloseDelay: defaultHoverCloseDelay
     readonly property Item maskItem: loader.active ? popupContainer : null
-
 
     anchors.fill: parent
 

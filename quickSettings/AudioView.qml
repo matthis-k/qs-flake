@@ -5,7 +5,7 @@ import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
-import "../services" 1.0
+import "../services"
 import "../components"
 
 Item {
