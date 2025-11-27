@@ -11,6 +11,7 @@ import "../quickSettings"
 
 Item {
     id: root
+    implicitWidth: height
 
     Component {
         id: audioPopupComponent
@@ -95,6 +96,7 @@ Item {
         iconName: root.volumeIcon(root.sink?.audio?.volume, root.sink?.audio?.muted)
         overlayColor: root.overlayColor(root.sink?.audio?.volume, root.sink?.audio?.muted)
         popupComponent: audioPopupComponent
+        opacity: root.hasSink ? 1.0 : 0.7
     }
 
     WheelHandler {

@@ -21,11 +21,11 @@ Item {
     IconImage {
         id: icon
         anchors.centerIn: parent
-        width: Math.min(parent.width, parent.height)
+        width: Math.round(parent.height * Config.styling.statusIconScaler / 2) * 2
         height: width
         source: root.iconPath
         mipmap: root.mipmap
-        scale: root.hovered ? Config.styling.statusIconScaler : Config.styling.statusIconScaler * Config.styling.statusIconScaler
+        scale: root.hovered ? 1.25 : 1
 
         Behavior on scale {
             enabled: Config.styling.animation.enabled
