@@ -65,6 +65,7 @@ Singleton {
         property color warning: colorsObj.yellow
         property color urgent: colorsObj.yellow
         property color critical: colorsObj.red
+        property color close: colorsObj.red
 
         property color bluetooth: colorsObj.blue
         property color activeIndicator: colorsObj.green

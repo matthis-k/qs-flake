@@ -8,6 +8,7 @@ import Quickshell.Hyprland
 import Quickshell.Wayland
 import Quickshell.Widgets
 import "../services"
+import "../managers"
 import "../components"
 
 Item {
@@ -127,8 +128,24 @@ Item {
         height: implicitHeight
         Layout.fillHeight: true
 
+        property Component popupComponent: Component {
+            HyprlandToplevelView {
+                toplevel: tl.toplevel
+                title: tl.toplevel.title
+            }
+        }
+
         HoverHandler {
             id: toplevelHover
+            onHoveredChanged: {
+                if (hovered) {
+                    PopupManager.anchors.topLeft.show(tl.popupComponent, {
+                        peeking: true
+                    });
+                } else {
+                    PopupManager.anchors.topLeft.hide(500);
+                }
+            }
         }
 
         Rectangle {
