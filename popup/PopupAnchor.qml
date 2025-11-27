@@ -66,7 +66,7 @@ Item {
         const normalized = {
             hoverCloseDelay: opts.hoverCloseDelay ?? defaultHoverCloseDelay,
             peeking: !!opts.peeking,
-            autoClose: opts.autoClose !== undefined ? opts.autoClose : !!opts.peeking,
+            autoClose: opts.autoClose !== undefined ? opts.autoClose : true,
             properties: opts.properties || null
         };
         if (normalized.peeking)
@@ -80,8 +80,16 @@ Item {
         isPeeking = opts.peeking;
         autoCloseOnHoverLeave = opts.autoClose;
         cancelHide();
-        currentComponent = component;
-        assignComponent(component, opts.properties);
+        if (currentComponent !== component) {
+            currentComponent = component;
+            assignComponent(component, opts.properties);
+        } else {
+            // Update properties without reloading
+            if (opts.properties && loader.item) {
+                for (const key of Object.keys(opts.properties))
+                    loader.item[key] = opts.properties[key];
+            }
+        }
     }
 
     function hide(timeout_ms) {

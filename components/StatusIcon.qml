@@ -56,7 +56,7 @@ Item {
                 PopupManager.anchors.topRight.show(root.popupComponent, {
                     peeking: peeking
                 });
-            } else if (peeking) {
+            } else if (!hovered && root.popupComponent) {
                 peeking = false;
                 PopupManager.anchors.topRight.hide(500);
             }
