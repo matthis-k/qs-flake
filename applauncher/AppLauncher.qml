@@ -102,6 +102,7 @@ PanelWindow {
                 selectionColor: Config.colors.sapphire
                 selectedTextColor: Config.styling.bg2
                 font.pixelSize: 14
+                verticalAlignment: TextInput.AlignVCenter
                 focus: true
 
                 onTextChanged: {
