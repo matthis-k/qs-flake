@@ -76,6 +76,7 @@ Singleton {
 
         property double statusIconScaler: 0.8
         property int peekCloseDelay: 250
+        property double hoverBgOpacity: 0.2
 
         readonly property QtObject animation: QtObject {
             property double duration_multiplier: 1.0

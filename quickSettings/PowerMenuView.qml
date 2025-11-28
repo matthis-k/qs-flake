@@ -55,7 +55,7 @@ Item {
                 anchors.bottom: parent.bottom
                 width: hoverHandler.hovered ? parent.width : 0
                 color: option.optionColor
-                opacity: 0.2
+                opacity: Config.styling.hoverBgOpacity
 
                 Behavior on width {
                     enabled: Config.styling.animation.enabled

@@ -40,13 +40,30 @@ PanelWindow {
     RowLayout {
         id: left
         anchors.left: parent.left
-        anchors.topMargin: (barHeight / 8) - 1
-        anchors.bottomMargin: (barHeight / 8) + 1
         anchors.top: parent.top
         anchors.bottom: sep.top
+        anchors.topMargin: (barHeight / 8) - 1
+        anchors.bottomMargin: (barHeight / 8) + 1
 
         HyprlandWidget {
             Layout.fillHeight: true
+        }
+    }
+    RowLayout {
+        id: center
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.bottom: sep.top
+        anchors.topMargin: (barHeight / 8) - 1
+        anchors.bottomMargin: (barHeight / 8) + 1
+
+        RowLayout {
+            Layout.fillHeight: true
+
+            ClockWidget {
+                Layout.fillHeight: true
+                Layout.alignment: Qt.AlignVCenter
+            }
         }
     }
 

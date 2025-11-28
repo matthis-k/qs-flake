@@ -155,7 +155,7 @@ Item {
             readonly property bool showUrgent: !showActive && tl.isUrgent
             readonly property bool shouldShow: showActive || showUrgent
             color: showActive ? Config.styling.activeIndicator : Config.styling.urgent
-            opacity: shouldShow ? 0.2 : 0
+            opacity: shouldShow ? Config.styling.hoverBgOpacity : 0
             scale: shouldShow ? 1 : 0.85
             transformOrigin: Item.Center
             z: -1
