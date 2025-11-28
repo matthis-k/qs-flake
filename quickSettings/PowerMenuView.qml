@@ -50,11 +50,14 @@ Item {
 
             Rectangle {
                 id: bg
-                anchors.fill: parent
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: hoverHandler.hovered ? parent.width : 0
                 color: option.optionColor
-                opacity: hoverHandler.hovered ? 0.2 : 0
+                opacity: 0.2
 
-                Behavior on opacity {
+                Behavior on width {
                     enabled: Config.styling.animation.enabled
                     NumberAnimation {
                         duration: Config.styling.animation.calc(0.1)
@@ -71,17 +74,8 @@ Item {
                 anchors.bottom: parent.bottom
                 width: hoverHandler.hovered ? accentMaxWidth : 0
                 color: option.optionColor
-                opacity: hoverHandler.hovered ? 1 : 0
 
                 Behavior on width {
-                    enabled: Config.styling.animation.enabled
-                    NumberAnimation {
-                        duration: Config.styling.animation.calc(0.1)
-                        easing.type: Easing.Bezier
-                        easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
-                    }
-                }
-                Behavior on opacity {
                     enabled: Config.styling.animation.enabled
                     NumberAnimation {
                         duration: Config.styling.animation.calc(0.1)

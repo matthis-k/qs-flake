@@ -51,18 +51,6 @@ PanelWindow {
     }
 
     RowLayout {
-        id: center
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.bottom: sep.top
-        anchors.topMargin: (barHeight / 8) - 1
-        anchors.bottomMargin: (barHeight / 8) + 1
-        ClockWidget {
-            Layout.fillHeight: true
-        }
-    }
-
-    RowLayout {
         id: right
         anchors.right: parent.right
         anchors.top: parent.top
@@ -73,8 +61,8 @@ PanelWindow {
 
         HoverHandler {
             onHoveredChanged: {
-                if (hovered) {
-                    PopupManager.anchors.topRight.cancelHide();
+                if (!hovered) {
+                    PopupManager.anchors.topRight.hide(500);
                 }
             }
         }

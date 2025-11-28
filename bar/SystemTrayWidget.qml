@@ -135,7 +135,7 @@ Pill {
 
         add: Transition {
             NumberAnimation {
-                properties: "opacity,scale"
+                properties: "scale"
                 from: 0.2
                 to: 1
                 duration: 180
@@ -145,7 +145,7 @@ Pill {
 
         remove: Transition {
             NumberAnimation {
-                properties: "opacity,scale"
+                properties: "scale"
                 from: 1
                 to: 0
                 duration: 150

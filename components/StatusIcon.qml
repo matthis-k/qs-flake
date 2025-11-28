@@ -54,11 +54,9 @@ Item {
             if (hovered && root.popupComponent) {
                 peeking = true;
                 PopupManager.anchors.topRight.show(root.popupComponent, {
-                    peeking: peeking
+                    peeking: peeking,
+                    autoClose: false
                 });
-            } else if (!hovered && root.popupComponent) {
-                peeking = false;
-                PopupManager.anchors.topRight.hide(500);
             }
         }
     }
