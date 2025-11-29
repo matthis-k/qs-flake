@@ -6,7 +6,7 @@ import Qt5Compat.GraphicalEffects
 import "../services"
 import "../components"
 import "../managers"
-import "../quickSettings"
+import "../panels"
 
 Item {
     id: root
@@ -15,7 +15,7 @@ Item {
 
     Component {
         id: batteryPopupComponent
-        BatteryView {}
+        BatteryPanel {}
     }
     readonly property real iconMargin: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
 

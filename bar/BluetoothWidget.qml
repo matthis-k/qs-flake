@@ -7,7 +7,7 @@ import Qt5Compat.GraphicalEffects
 import "../services"
 import "../components"
 import "../managers"
-import "../quickSettings"
+import "../panels"
 
 Item {
     id: root
@@ -16,7 +16,7 @@ Item {
 
     Component {
         id: bluetoothPopupComponent
-        BluetoothView {}
+        BluetoothPanel {}
     }
 
     property bool expanded: false

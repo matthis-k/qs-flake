@@ -5,14 +5,14 @@ import Quickshell
 import "../components"
 import "../services"
 import "../managers"
-import "../quickSettings"
+import "../panels"
 
 Item {
     id: root
 
     Component {
         id: networkPopupComponent
-        NetworkView {}
+        NetworkPanel {}
     }
 
     implicitWidth: root.height

@@ -7,7 +7,7 @@ import Quickshell.Services.Pipewire
 import "../services"
 import "../components"
 import "../managers"
-import "../quickSettings"
+import "../panels"
 
 Item {
     id: root
@@ -15,7 +15,7 @@ Item {
 
     Component {
         id: audioPopupComponent
-        AudioView {}
+        AudioPanel {}
     }
 
     readonly property var sink: Pipewire.defaultAudioSink
