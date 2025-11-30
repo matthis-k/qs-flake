@@ -8,7 +8,6 @@ import Quickshell.Hyprland
 import Quickshell.Wayland
 import Quickshell.Widgets
 import "../services"
-import "../managers"
 import "../components"
 
 Item {
@@ -118,6 +117,26 @@ Item {
         id: tl
         required property HyprlandToplevel toplevel
 
+        // Utility function to find the inheritance node
+        function findInheritanceNode(obj) {
+            if (obj && obj.inheritanceNode) {
+                return obj.inheritanceNode;
+            }
+            if (obj && obj.parent) {
+                return findInheritanceNode(obj.parent);
+            }
+            return null;
+        }
+
+        // Property to hold the found screen
+        property var barScreen: {
+            var node = findInheritanceNode(parent);
+            return node ? node.lookup("screen") : null;
+        }
+
+        // Find the anchor for this screen
+        property var myAnchor: popups.getAnchor(barScreen, "topLeft")
+
         property bool inFocusedWorkspace: Hyprland.focusedWorkspace && toplevel.workspace && Hyprland.focusedWorkspace.id === toplevel.workspace.id
         readonly property bool isActiveOnFocusedWorkspace: inFocusedWorkspace && toplevel?.activated
         readonly property bool isUrgent: !!toplevel?.urgent
@@ -139,11 +158,18 @@ Item {
             id: toplevelHover
             onHoveredChanged: {
                 if (hovered) {
-                    PopupManager.anchors.topLeft.show(tl.popupComponent, {
-                        peeking: true
-                    });
+                    if (tl.myAnchor) {
+                        tl.myAnchor.show(tl.popupComponent, {
+                            peeking: true,
+                            properties: {
+                                anchorController: tl.myAnchor
+                            }
+                        });
+                    }
                 } else {
-                    PopupManager.anchors.topLeft.hide(500);
+                    if (tl.myAnchor) {
+                        tl.myAnchor.hide(500);
+                    }
                 }
             }
         }

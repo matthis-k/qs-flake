@@ -6,7 +6,6 @@ import Quickshell.Bluetooth
 import Qt5Compat.GraphicalEffects
 import "../services"
 import "../components"
-import "../managers"
 import "../panels"
 
 Item {

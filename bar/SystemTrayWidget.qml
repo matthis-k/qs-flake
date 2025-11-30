@@ -7,7 +7,6 @@ import Quickshell.Widgets
 import Qt5Compat.GraphicalEffects
 import "../components"
 import "../services"
-import "../managers"
 
 Pill {
     property bool expanded: true

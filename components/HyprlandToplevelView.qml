@@ -5,13 +5,13 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Widgets
 import "../services"
-import "../managers"
 
 Item {
     id: root
 
     property var toplevel
     property string title
+    property QtObject anchorController
 
     property real screenFraction: 0.3
 
@@ -98,7 +98,9 @@ Item {
                 onSingleTapped: {
                     let f = root.toplevel?.wayland?.close;
                     f && f();
-                    PopupManager.anchors.topLeft.hide();
+                    if (root.anchorController) {
+                        root.anchorController.hide();
+                    }
                 }
             }
         }

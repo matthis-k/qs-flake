@@ -4,12 +4,15 @@ import QtQuick
 import QtQuick.Layouts
 import "../services"
 import "../components"
-import "../managers"
+import "../lib"
 
 PanelWindow {
     id: barWin
     property var modelData
     screen: modelData
+
+    // Find the panel for this screen
+    property var myPanel: popups.getPanelForScreen(screen)
 
     property real barHeight: Screen.devicePixelRatio * 96 / 2.54
 
@@ -30,6 +33,10 @@ PanelWindow {
     }
     color: Config.styling.bg0
     implicitHeight: barHeight
+
+    InheritedProperty {
+        property var screen: barWin.screen
+    }
 
     Rectangle {
         id: bar
@@ -78,8 +85,8 @@ PanelWindow {
 
         HoverHandler {
             onHoveredChanged: {
-                if (!hovered) {
-                    PopupManager.anchors.topRight.hide(500);
+                if (!hovered && myPanel) {
+                    myPanel.topRight.hide(500);
                 }
             }
         }
@@ -114,7 +121,7 @@ PanelWindow {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         height: 1
-        implicitWidth: 1920 - (PopupManager.anchors.topRight.visible ? PopupManager.anchors.topRight.width : 0)
+        implicitWidth: 1920 - (myPanel && myPanel.topRight.visible ? myPanel.topRight.width : 0)
 
         color: Config.styling.primaryAccent
     }

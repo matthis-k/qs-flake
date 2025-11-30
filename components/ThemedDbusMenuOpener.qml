@@ -5,13 +5,34 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import "../services"
-import "../managers"
 
 Item {
     id: root
     required property QsMenuHandle menu
-    property QtObject popupAnchor: PopupManager.topRight
+    property QtObject popupAnchor: {
+        if (barScreen) {
+            return popups.getAnchor(barScreen, "topRight");
+        }
+        return PopupManager.topRight; // fallback
+    }
     property bool closeOnAction: true
+
+    // Utility function to find the inheritance node
+    function findInheritanceNode(obj) {
+        if (obj && obj.inheritanceNode) {
+            return obj.inheritanceNode;
+        }
+        if (obj && obj.parent) {
+            return findInheritanceNode(obj.parent);
+        }
+        return null;
+    }
+
+    // Property to hold the found screen
+    property var barScreen: {
+        var node = findInheritanceNode(parent);
+        return node ? node.lookup("screen") : null;
+    }
 
     property color background: Config.styling.bg1
     property color borderColor: Config.styling.bg5

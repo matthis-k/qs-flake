@@ -2,10 +2,10 @@ pragma Singleton
 import Quickshell
 import Quickshell.Io
 import QtQuick
-import "../applauncher"
+import "../panels"
 
 Singleton {
-    AppLauncher {
+    AppLauncherPanel {
         id: appLauncher
     }
 

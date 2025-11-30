@@ -2,10 +2,17 @@
 import Quickshell
 import Quickshell.Io
 import QtQuick
-import "managers"
+import "./bar"
+import "./ipcTargets"
+import "./panels"
 
 Scope {
-    property BarManager bars: BarManager
-    property PopupManager popups: PopupManager
-    property AppLauncherManager appLauncher: AppLauncherManager
+    BarState {
+        id: barState
+    }
+    PanelState {
+        id: panelState
+    }
+    property var appLauncher: AppLauncherIpc
+    property var popups: panelState
 }

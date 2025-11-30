@@ -6,7 +6,6 @@ import Quickshell
 import Quickshell.Services.Pipewire
 import "../services"
 import "../components"
-import "../managers"
 import "../panels"
 
 Item {

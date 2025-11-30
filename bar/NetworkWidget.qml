@@ -4,7 +4,6 @@ import QtQuick.Controls
 import Quickshell
 import "../components"
 import "../services"
-import "../managers"
 import "../panels"
 
 Item {

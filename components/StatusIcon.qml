@@ -4,10 +4,29 @@ import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Widgets
 import "../services"
-import "../managers"
 
 Item {
     id: root
+
+    // Utility function to find the inheritance node
+    function findInheritanceNode(obj) {
+        if (obj && obj.inheritanceNode) {
+            return obj.inheritanceNode;
+        }
+        if (obj && obj.parent) {
+            return findInheritanceNode(obj.parent);
+        }
+        return null;
+    }
+
+    // Property to hold the found screen
+    property var barScreen: {
+        var node = findInheritanceNode(parent);
+        return node ? node.lookup("screen") : null;
+    }
+
+    // Find the panel for this screen
+    property var myPanel: popups.getPanelForScreen(barScreen)
 
     property var iconName: "dialog-warning"
     property var iconPath: Quickshell.iconPath(iconName, "dialog-warning")
@@ -51,9 +70,9 @@ Item {
         id: hoverHandler
         enabled: root.enableHover
         onHoveredChanged: {
-            if (hovered && root.popupComponent) {
+            if (hovered && root.popupComponent && root.myPanel) {
                 peeking = true;
-                PopupManager.anchors.topRight.show(root.popupComponent, {
+                root.myPanel.topRight.show(root.popupComponent, {
                     peeking: peeking,
                     autoClose: false
                 });
@@ -64,9 +83,9 @@ Item {
     TapHandler {
         enabled: root.enableTap
         onSingleTapped: {
-            if (root.popupComponent) {
+            if (root.popupComponent && root.myPanel) {
                 peeking = false;
-                PopupManager.anchors.topRight.toggle(root.popupComponent, {
+                root.myPanel.topRight.toggle(root.popupComponent, {
                     peeking: peeking
                 });
             }
