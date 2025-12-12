@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Controls
 import "../../utils"
+import "../../utils/types"
 import "../../components"
 import "../../services"
 
@@ -23,25 +24,25 @@ PanelWindow {
     SelectView {
         id: selection
         anchors.centerIn: parent
-        SelectView.Option {
+        SimpleMap.Entry {
             key: "power"
-            item: Power {}
+            value: Power {}
         }
-        SelectView.Option {
+        SimpleMap.Entry {
             key: "battery"
-            item: Battery {}
+            value: Battery {}
         }
-        SelectView.Option {
+        SimpleMap.Entry {
             key: "network"
-            item: Network {}
+            value: Network {}
         }
-        SelectView.Option {
+        SimpleMap.Entry {
             key: "bluetooth"
-            item: Bluetooth {}
+            value: Bluetooth {}
         }
-        SelectView.Option {
+        SimpleMap.Entry {
             key: "audio"
-            item: Audio {}
+            value: Audio {}
         }
     }
 

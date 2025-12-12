@@ -6,12 +6,12 @@ import Quickshell.Wayland
 import Quickshell.Widgets
 import "../../services"
 import "../../components"
+import "../hyprlandPreview"
 
 Item {
     id: root
-
-    property ShellScreen screen
-    property HyprlandMonitor monitor: screen ? Hyprland.monitorFor(screen) : null
+    property bool onlyForScreen: true
+    property HyprlandMonitor monitor: onlyForScreen ? Hyprland.monitorFor(screen) : null
 
     implicitHeight: parent.height
     implicitWidth: row.implicitWidth
@@ -87,8 +87,12 @@ Item {
     }
 
     component TopLevel: Rectangle {
+        id: tl
         required property HyprlandToplevel modelData
         property HyprlandToplevel toplevel: modelData
+        property HyprlandToplevelView preview: HyprlandToplevelView {
+            toplevel: tl.toplevel
+        }
         property DesktopEntry entry: {
             DesktopEntries.applications?.values;
             return DesktopEntries.heuristicLookup(toplevel.wayland?.appId);
@@ -115,6 +119,13 @@ Item {
             scaleTarget: tlIcon
             hoveredScale: 1.0
             unhoveredScale: 0.8
+            onHoveredChanged: {
+                const previewWindow = ShellState.getScreenByName(screen.name).hyprlandPreview;
+                if (hovered) {
+                    previewWindow.views.insert("hyprlandPreview", tl.preview);
+                }
+                previewWindow.externalHovers += hovered ? 1 : -1;
+            }
         }
 
         TapHandler {

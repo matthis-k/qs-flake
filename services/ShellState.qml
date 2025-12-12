@@ -4,6 +4,7 @@ import Quickshell
 import "../utils"
 import "../modules/bar" as Bar
 import "../modules/quickmenu" as Quickmenu
+import "../modules/hyprlandPreview/" as HyprlandPreview
 import "../components" as Components
 
 Singleton {
@@ -33,6 +34,10 @@ Singleton {
         }
 
         property Quickmenu.Window quickmenu: Quickmenu.Window {
+            screen: screenState.screen
+        }
+
+        property HyprlandPreview.Window hyprlandPreview: HyprlandPreview.Window {
             screen: screenState.screen
         }
     }
