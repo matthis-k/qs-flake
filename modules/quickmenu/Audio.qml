@@ -5,8 +5,8 @@ import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
-import "../services"
-import "../components"
+import "../../services"
+import "../../components"
 
 Item {
     id: root

@@ -1,0 +1,25 @@
+import QtQuick
+import Qt5Compat.GraphicalEffects
+import Quickshell
+import Quickshell.Widgets
+import "../../services"
+import "../../components"
+import "../../modules/quickmenu"
+
+Icon {
+    id: root
+    property var quickmenuName
+
+    HoverHandler {
+        onHoveredChanged: {
+            if (!quickmenuName) {
+                return;
+            }
+            let qm = ShellState.getScreenByName(screen.name).quickmenu;
+            if (hovered) {
+                qm.view = quickmenuName;
+            }
+            qm.externalHovers += hovered ? 1 : -1;
+        }
+    }
+}

@@ -1,18 +1,8 @@
 //@ pragma UseQApplication
 import Quickshell
-import Quickshell.Io
 import QtQuick
-import "./bar"
-import "./ipcTargets"
-import "./panels"
+import "./services"
 
-Scope {
-    BarState {
-        id: barState
-    }
-    PanelState {
-        id: panelState
-    }
-    property var appLauncher: AppLauncherIpc
-    property var popups: panelState
+ShellRoot {
+    property ShellState shellState: ShellState
 }

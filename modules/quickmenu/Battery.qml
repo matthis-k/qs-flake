@@ -1,11 +1,11 @@
- import QtQuick
- import QtQuick.Layouts
- import Qt5Compat.GraphicalEffects
- import Quickshell
- import Quickshell.Widgets
- import Quickshell.Services.UPower
+import QtQuick
+import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
+import Quickshell
+import Quickshell.Widgets
+import Quickshell.Services.UPower
 
- import "../services"
+import "../../services"
 
 Item {
     id: root
@@ -123,15 +123,15 @@ Item {
                 ColorOverlay {
                     id: powerProfileIcon2
                     property string iconName: ({
-                                [PowerProfile.Performance]: "power-profile-performance-symbolic",
-                                [PowerProfile.Balanced]: "power-profile-balanced-symbolic",
-                                [PowerProfile.PowerSaver]: "power-profile-power-saver-symbolic"
-                            })[PowerProfiles.profile]
+                            [PowerProfile.Performance]: "power-profile-performance-symbolic",
+                            [PowerProfile.Balanced]: "power-profile-balanced-symbolic",
+                            [PowerProfile.PowerSaver]: "power-profile-power-saver-symbolic"
+                        })[PowerProfiles.profile]
                     color: ({
-                                [PowerProfile.Performance]: Config.styling.critical,
-                                [PowerProfile.Balanced]: Config.colors.yellow,
-                                [PowerProfile.PowerSaver]: Config.styling.good
-                            })[PowerProfiles.profile]
+                            [PowerProfile.Performance]: Config.styling.critical,
+                            [PowerProfile.Balanced]: Config.colors.yellow,
+                            [PowerProfile.PowerSaver]: Config.styling.good
+                        })[PowerProfiles.profile]
                     implicitWidth: 32
                     implicitHeight: 32
                     source: IconImage {

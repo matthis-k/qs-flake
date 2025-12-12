@@ -1,14 +1,13 @@
 pragma Singleton
 import QtQuick
-import QtQuick.Layouts
 import Quickshell.Io
 import Quickshell
 
 Singleton {
     id: nm
-    property var networks: []               // [{ssid,bssid,security,strength,inUse,icon}]
-    property var active: []                 // [{name,uuid,device,icon}]
-    property string managerState: ""       // connected|connecting|disconnected|...
+    property var networks: [] // [{ssid,bssid,security,strength,inUse,icon}]
+    property var active: [] // [{name,uuid,device,icon}]
+    property string managerState: "" // connected|connecting|disconnected|...
     property bool busy: false
     property string lastError: ""
     property bool monitorEnabled: true

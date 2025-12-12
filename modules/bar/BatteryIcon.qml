@@ -1,24 +1,13 @@
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.UPower
-import Qt5Compat.GraphicalEffects
-import "../services"
-import "../components"
-import "../panels"
+import "../../services"
 
-Item {
+StatusIcon {
     id: root
     property UPowerDevice bat: UPower.displayDevice
-    implicitWidth: height
 
-    Component {
-        id: batteryPopupComponent
-        BatteryPanel {}
-    }
-    readonly property real iconMargin: Math.floor(root.height * (1 - Config.styling.statusIconScaler) / 2)
-
-    property color stateColor: {
+    color: {
         let percentage = Math.floor(root.bat.percentage * 100);
         return [
             {
@@ -43,10 +32,6 @@ Item {
             }) => percentage <= max).col;
     }
 
-    StatusIcon {
-        anchors.fill: parent
-        iconName: root.bat.iconName
-        overlayColor: root.stateColor
-        popupComponent: batteryPopupComponent
-    }
+    iconName: root.bat.iconName
+    quickmenuName: "battery"
 }

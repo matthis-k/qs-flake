@@ -75,6 +75,17 @@ Singleton {
         property int margin: radius
 
         property double statusIconScaler: 0.8
+    }
+
+    PersistentProperties {
+        id: barObj
+        reloadableId: "persitentBar"
+    }
+
+    PersistentProperties {
+        id: behaviourObj
+        reloadableId: "persistentBehaviour"
+
         property int peekCloseDelay: 250
         property double hoverBgOpacity: 0.2
 
@@ -87,12 +98,8 @@ Singleton {
         }
     }
 
-    PersistentProperties {
-        id: barObj
-        reloadableId: "persitentBar"
-    }
-
-    readonly property PersistentProperties colors: colorsObj
-    readonly property PersistentProperties styling: stylingObj
-    readonly property PersistentProperties bar: barObj
+    readonly property alias colors: colorsObj
+    readonly property alias styling: stylingObj
+    readonly property alias bar: barObj
+    readonly property alias behaviour: behaviourObj
 }
