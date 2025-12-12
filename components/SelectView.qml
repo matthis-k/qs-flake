@@ -6,73 +6,60 @@ Item {
     id: root
 
     property string currentView: ""
+    property Item currentItem: null
+
+    implicitWidth: currentItem ? currentItem.implicitWidth : 0
+    implicitHeight: currentItem ? currentItem.implicitHeight : 0
 
     default property alias entries: views.entries
-    readonly property SimpleMap map: views
-
-    readonly property Item currentItem: _currentItem
-
-    property Item _currentItem: null
-    property bool _owned: false
-
-    implicitWidth: _currentItem ? _currentItem.implicitWidth : 0
-    implicitHeight: _currentItem ? _currentItem.implicitHeight : 0
 
     SimpleMap {
         id: views
     }
 
-    onCurrentViewChanged: _sync()
-    Connections {
-        target: views
-        function onReactiveChanged() {
-            root._sync();
-        }
-    }
-    Component.onCompleted: _sync()
+    property var _selectedValue: currentView ? views.get(currentView) : undefined
 
-    function _sync() {
-        const value = currentView ? views.get(currentView) : undefined;
-        _currentItem = _apply(value);
-    }
+    property bool _owned: false
 
-    function _apply(value) {
-        if (_currentItem) {
+    on_SelectedValueChanged: {
+        if (currentItem) {
             if (_owned) {
-                _currentItem.destroy();
+                currentItem.destroy();
             } else {
-                if (_currentItem.parent === root)
-                    _currentItem.parent = null;
-                _currentItem.visible = false;
+                if (currentItem.parent === root)
+                    currentItem.parent = null;
+                currentItem.visible = false;
             }
         }
 
+        currentItem = null;
         _owned = false;
 
-        if (!value)
-            return null;
+        if (!_selectedValue)
+            return;
 
         var item = null;
-        if (value instanceof Component) {
-            item = value.createObject(root);
+
+        if (_selectedValue instanceof Component) {
+            item = _selectedValue.createObject(root);
             _owned = true;
         } else {
-            item = value;
+            item = _selectedValue;
         }
 
         if (!item)
-            return null;
+            return;
 
         item.parent = root;
         if (item.anchors)
             item.anchors.fill = root;
         item.visible = true;
 
-        return item;
+        currentItem = item;
     }
 
-    function get(key, def) {
-        return views.get(key, def);
+    function get(key, defaultValue) {
+        return views.get(key, defaultValue);
     }
     function has(key) {
         return views.has(key);
@@ -83,8 +70,12 @@ Item {
     function values() {
         return views.values();
     }
-    function insert(key, val) {
-        return views.insert(key, val);
+
+    function getEntry(key) {
+        return views.getEntry(key);
+    }
+    function insert(key, value) {
+        return views.insert(key, value);
     }
     function remove(key) {
         return views.remove(key);
