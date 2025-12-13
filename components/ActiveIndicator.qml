@@ -3,6 +3,7 @@ import "../services"
 
 Item {
     id: root
+    z: -1
 
     enum Side {
         Top,

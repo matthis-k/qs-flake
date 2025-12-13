@@ -27,15 +27,6 @@ Singleton {
 
         property Bar.Window bar: Bar.Window {
             screen: screenState.screen
-            function open() {
-                bar.visible = true;
-            }
-            function close() {
-                bar.visible = false;
-            }
-            function toggle() {
-                bar.visible = !bar.visible;
-            }
             IpcHandler {
                 target: `bar-${screen.name}`
                 function open() {

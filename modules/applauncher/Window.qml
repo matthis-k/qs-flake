@@ -14,8 +14,8 @@ PanelWindow {
     color: "transparent"
     visible: false
 
-    implicitWidth: launcher.implicitWidth + 32
-    implicitHeight: launcher.implicitHeight + 32
+    implicitWidth: launcher.implicitWidth
+    implicitHeight: launcher.implicitHeight
 
     anchors {
         top: true
@@ -30,16 +30,15 @@ PanelWindow {
     }
 
     function open() {
-        resume = resume || false;
-        win.visible = true;
+        visible = true;
     }
 
     function close() {
-        visiblefalse;
+        visible = false;
     }
 
     function toggle() {
-        if (win.visible) {
+        if (visible) {
             close();
         } else {
             open(resume);

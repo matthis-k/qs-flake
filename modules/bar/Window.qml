@@ -11,4 +11,14 @@ PanelWindow {
     }
     implicitHeight: Math.round(Pixels.mm(10, screen)) | 1
     Bar {}
+
+    function open() {
+        visible = true;
+    }
+    function close() {
+        visible = false;
+    }
+    function toggle() {
+        visible = !visible;
+    }
 }

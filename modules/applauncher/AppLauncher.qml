@@ -4,33 +4,17 @@ import QtQuick.Layouts
 import Quickshell
 import "../../components"
 import "../../services"
+import "../../utils"
 
-FocusScope {
+Item {
     id: root
     focus: true
 
-    readonly property int cellWidth: 160
-    readonly property int cellHeight: 120
-    readonly property real widthFraction: 0.75
-    readonly property real heightFraction: 0.75
-    readonly property real searchHeight: 44
-    readonly property int outerPadding: 64
-    readonly property int spacing: 24
+    implicitHeight: wrapper.implicitHeight + 16
+    implicitWidth: wrapper.implicitWidth + 32
 
     property string filterText: ""
     property var filteredApps: []
-
-    readonly property real availableWidth: Math.max(cellWidth * 2, (screen ? screen.width : 1280) * widthFraction)
-    readonly property real availableHeight: Math.max(cellHeight * 2, (screen ? screen.height : 720) * heightFraction)
-
-    readonly property int calculatedColumns: Math.max(2, Math.floor(availableWidth / cellWidth))
-    readonly property int columns: Math.max(2, calculatedColumns - (calculatedColumns % 2))
-    readonly property int maxRows: Math.max(1, Math.floor(availableHeight / cellHeight))
-
-    implicitWidth: Math.min(columns * cellWidth + outerPadding * 2, (screen ? screen.width : (columns * cellWidth + outerPadding * 2)))
-    implicitHeight: Math.min(maxRows * cellHeight + searchHeight + spacing + outerPadding * 2, (screen ? screen.height : (maxRows * cellHeight + searchHeight + spacing + outerPadding * 2)))
-
-    Keys.onEscapePressed: ShellState.getScreenByName(screen.name).appLauncher.close()
 
     function refreshFilter() {
         const apps = (DesktopEntries.applications?.values || []).filter(entry => !entry.noDisplay).filter(entry => {
@@ -72,42 +56,53 @@ FocusScope {
 
     Component.onCompleted: {
         refreshFilter();
-        forceActiveFocus();
+        searchInput.forceActiveFocus();
     }
 
     Rectangle {
-        id: card
-        anchors.centerIn: parent
-        width: Math.min(columns * cellWidth + outerPadding * 2, root.availableWidth)
-        height: Math.min(maxRows * cellHeight + searchHeight + spacing + outerPadding * 2, root.availableHeight)
+        id: bg
         color: Config.styling.bg0
+        border.width: 1
         border.color: Config.styling.primaryAccent
+        anchors.fill: parent
+    }
 
-        ColumnLayout {
-            id: layoutRoot
-            anchors.fill: parent
-            anchors.margins: outerPadding
-            spacing: spacing
+    Item {
+        id: wrapper
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        implicitHeight: inputWrapper.implicitHeight + gridWrapper.implicitHeight
+        implicitWidth: gridWrapper.implicitWidth
+        Item {
+            id: inputWrapper
+            implicitHeight: Pixels.mm(30, screen)
+            anchors.top: parent.top
+            anchors.left: gridWrapper.left
+            anchors.right: gridWrapper.right
+            height: implicitHeight
 
             TextField {
                 id: searchInput
-                focus: true
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: Math.min(card.width - outerPadding, 480)
-                Layout.minimumWidth: 320
+                anchors.centerIn: parent
+                implicitHeight: parent.height / 3
+                implicitWidth: parent.width / 3
                 placeholderText: "Search apps"
-                color: Config.styling.text0
 
+                focus: true
+
+                color: Config.styling.text0
                 placeholderTextColor: Config.styling.bg7
                 selectionColor: Config.colors.sapphire
                 selectedTextColor: Config.styling.bg2
-                font.pixelSize: 16
+
+                font.pixelSize: height * 0.6
                 verticalAlignment: TextInput.AlignVCenter
                 background: Rectangle {
                     color: Config.styling.bg2
                     border.width: 1
                     border.color: searchInput.activeFocus ? Config.styling.primaryAccent : Config.styling.bg4
                 }
+
                 Keys.onEscapePressed: ShellState.getScreenByName(screen.name).appLauncher.close()
                 Keys.onReturnPressed: root.activateIndex(grid.currentIndex)
                 Keys.onEnterPressed: root.activateIndex(grid.currentIndex)
@@ -115,104 +110,62 @@ FocusScope {
                 Keys.onDownPressed: grid.moveCurrentIndexDown()
                 Keys.onLeftPressed: grid.moveCurrentIndexLeft()
                 Keys.onRightPressed: grid.moveCurrentIndexRight()
+
                 onTextChanged: {
                     root.filterText = text.trim().toLowerCase();
                     root.refreshFilter();
                     grid.positionViewAtBeginning();
                 }
             }
+        }
+        Item {
+            id: gridWrapper
+            anchors.top: inputWrapper.bottom
+            implicitWidth: grid.implicitWidth
+            implicitHeight: grid.implicitHeight
+            width: implicitWidth
+            height: implicitHeight
+            GridView {
+                id: grid
+                cellWidth: Pixels.mm(50, screen)
+                cellHeight: Pixels.mm(30, screen)
+                implicitWidth: cellWidth * 6
+                implicitHeight: cellHeight * 6
+                width: implicitWidth
+                height: implicitHeight
 
-            Item {
-                id: gridWrapper
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+                snapMode: GridView.SnapToRow
+                clip: true
+                model: root.filteredApps
+                focus: false
+                boundsBehavior: Flickable.StopAtBounds
 
-                GridView {
-                    id: grid
-                    anchors.fill: parent
-                    cellWidth: root.cellWidth
-                    cellHeight: root.cellHeight
-                    snapMode: GridView.SnapToRow
-                    clip: true
-                    model: root.filteredApps
-                    focus: false
-                    boundsBehavior: Flickable.StopAtBounds
+                delegate: Entry {
+                    id: entry
+                    property bool isCurrentItem
+                    implicitHeight: grid.cellHeight
+                    implicitWidth: grid.cellWidth
+                    required property var modelData
+                    desktopEntry: modelData
 
-                    delegate: Item {
-                        id: cell
-                        width: grid.cellWidth
-                        height: grid.cellHeight
-                        required property int index
-                        required property var modelData
-                        readonly property bool selected: index === grid.currentIndex
-
-                        HoverScaler {
-                            id: hoverHandler
-                            hoverTarget: cell
-                            scaleTarget: iconWrapper
-                            hoveredScale: 1.0
-                            unhoveredScale: 0.8
-                        }
-
-                        ActiveIndicator {
-                            id: indicator
-                            anchors.fill: parent
-                            side: ActiveIndicator.Side.Bottom
-                            color: Config.styling.good
-                            active: cell.selected
-                            bgActive: hoverHandler.hovered || cell.selected
-                            animationMode: ActiveIndicator.AnimationMode.GrowAll
-                        }
-
-                        ColumnLayout {
-                            id: entryContent
-                            anchors.centerIn: parent
-                            spacing: 4
-                            width: Math.min(parent.width, 140)
-
-                            Item {
-                                id: iconWrapper
-                                Layout.alignment: Qt.AlignHCenter
-                                implicitWidth: 48
-                                implicitHeight: 48
-
-                                Icon {
-                                    id: entryIcon
-                                    anchors.centerIn: parent
-                                    implicitSize: 48
-                                    smooth: true
-                                    source: Quickshell.iconPath(cell.modelData?.icon, "dialog-warning")
-                                }
-                            }
-
-                            Text {
-                                Layout.fillWidth: true
-                                horizontalAlignment: Text.AlignHCenter
-                                text: cell.modelData?.name || ""
-                                color: Config.styling.text0
-                                font.pixelSize: 14
-                                font.bold: true
-                                elide: Text.ElideRight
-                            }
-
-                            Text {
-                                Layout.fillWidth: true
-                                horizontalAlignment: Text.AlignHCenter
-                                text: cell.modelData?.genericName || cell.modelData?.comment || ""
-                                color: Config.styling.text2
-                                font.pixelSize: 12
-                                elide: Text.ElideRight
-                            }
-                        }
-
-                        TapHandler {
-                            acceptedButtons: Qt.LeftButton
-                            gesturePolicy: TapHandler.ReleaseWithinBounds
-                            cursorShape: Qt.PointingHandCursor
-                            onTapped: {
-                                grid.currentIndex = cell.index;
-                                root.activateIndex(cell.index);
-                            }
+                    ActiveIndicator {
+                        side: ActiveIndicator.Side.Bottom
+                        animationMode: ActiveIndicator.AnimationMode.GrowAll
+                        active: entry.GridView.isCurrentItem
+                        bgActive: hoverHandler.hovered || entry.GridView.isCurrentItem
+                        thickness: 8
+                    }
+                    HoverScaler {
+                        id: hoverHandler
+                        hoverTarget: entry
+                        scaleTarget: entry.icon
+                        baseScale: isCurrentItem ? 1.0 : 0.8
+                    }
+                    TapHandler {
+                        target: parent
+                        onTapped: {
+                            entry.desktopEntry.execute();
+                            ShellState.getScreenByName(screen.name).appLauncher.close();
                         }
                     }
                 }
@@ -224,6 +177,54 @@ FocusScope {
                     color: Config.styling.text2
                     font.pixelSize: 14
                 }
+            }
+        }
+    }
+
+    component Entry: Item {
+        required property DesktopEntry desktopEntry
+        readonly property alias icon: icon
+        Item {
+            id: iconWrapper
+            implicitHeight: parent.height * 0.5
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.left: parent.left
+            Icon {
+                id: icon
+                anchors.centerIn: parent
+                implicitSize: parent.height
+                smooth: true
+                source: Quickshell.iconPath(desktopEntry?.icon, "dialog-warning")
+            }
+        }
+        Item {
+            anchors.top: iconWrapper.bottom
+            anchors.right: parent.right
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            Text {
+                id: entryName
+                anchors.right: parent.right
+                anchors.left: parent.left
+                anchors.top: parent.top
+                horizontalAlignment: Text.AlignHCenter
+                text: desktopEntry?.name || ""
+                color: Config.styling.text0
+                font.pixelSize: parent.height / 4
+                font.bold: true
+                elide: Text.ElideRight
+            }
+
+            Text {
+                anchors.right: parent.right
+                anchors.left: parent.left
+                anchors.top: entryName.bottom
+                horizontalAlignment: Text.AlignHCenter
+                text: desktopEntry?.genericName || desktopEntry?.comment || ""
+                color: Config.styling.text2
+                font.pixelSize: parent.height / 5
+                elide: Text.ElideRight
             }
         }
     }
