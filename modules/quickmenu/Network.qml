@@ -4,6 +4,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Widgets
 import "../../services"
+import "../../components"
 
 Item {
     id: root
@@ -21,7 +22,7 @@ Item {
             Layout.preferredHeight: 32
             spacing: 10
 
-            IconImage {
+            Icon {
                 source: Quickshell.iconPath(NetworkManager.networks.find(n => n.inUse)?.icon || "network-wireless-offline-symbolic", "network-wireless-offline-symbolic")
                 implicitSize: 32
             }
@@ -44,7 +45,7 @@ Item {
                 color: Config.styling.text0
                 Layout.fillWidth: true
             }
-            IconImage {
+            Icon {
                 source: Quickshell.iconPath("pan-down-symbolic", "pan-down-symbolic")
                 implicitSize: 16
             }
@@ -74,7 +75,7 @@ Item {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 32
                         spacing: 8
-                        IconImage {
+                        Icon {
                             source: Quickshell.iconPath(modelData.icon, "network-wireless-signal-none-symbolic")
                             implicitSize: 16
                         }

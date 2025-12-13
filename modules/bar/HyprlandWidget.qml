@@ -107,7 +107,7 @@ Item {
             active: toplevel.activated && Hyprland.focusedWorkspace?.id == toplevel?.workspace.id
         }
 
-        IconImage {
+        Icon {
             id: tlIcon
             anchors.centerIn: parent
             source: iconSource

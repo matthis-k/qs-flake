@@ -2,28 +2,35 @@ import QtQuick
 import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Widgets
-import "../services"
 
 Item {
-    property var iconName: "dialog-warning"
-    property var iconPath: Quickshell.iconPath(iconName, "dialog-warning")
-    property color color: Config.styling.text0
+    id: root
 
-    implicitHeight: parent.height
-    implicitWidth: parent.height
+    property string iconName: "dialog-warning"
+    property string fallbackIconName: "dialog-warning"
+    property var iconPath: Quickshell.iconPath(iconName || fallbackIconName, fallbackIconName)
+    property var color: undefined
+    property real implicitSize: -1
+    property var source: undefined
+
+    readonly property bool hasImplicitSize: implicitSize >= 0
+
+    implicitWidth: hasImplicitSize ? implicitSize : (parent ? parent.height : icon.implicitWidth)
+    implicitHeight: hasImplicitSize ? implicitSize : (parent ? parent.height : icon.implicitHeight)
+
+    property alias smooth: icon.smooth
+    property alias mipmap: icon.mipmap
 
     IconImage {
         id: icon
-        anchors.centerIn: parent
-        width: root.height
-        height: root.height
-        source: root.iconPath
+        anchors.fill: parent
+        source: root.source !== undefined ? root.source : root.iconPath
     }
 
     ColorOverlay {
-        visible: !!root.color
+        visible: root.color !== undefined && root.color !== null
         anchors.fill: icon
-        color: visible ? root.color : undefined
+        color: visible ? root.color : "transparent"
         source: icon
         scale: icon.scale
     }

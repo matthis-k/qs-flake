@@ -31,10 +31,46 @@ Item {
     readonly property bool horizontal: side === ActiveIndicator.Side.Top || side === ActiveIndicator.Side.Bottom
     readonly property bool vertical: !horizontal
 
+    readonly property bool animateNormalAxis: (animationMode & ActiveIndicator.AnimationMode.GrowAlong) !== 0
+    readonly property bool animateLengthAxis: (animationMode & ActiveIndicator.AnimationMode.GrowAcross) !== 0
+
     property real thickness: (horizontal ? height : width) * 0.1
 
     anchors.fill: parent
     clip: true
+
+    Item {
+        id: backgroundContent
+        anchors.fill: parent
+
+        property real t: bgActive ? 1 : 0
+
+        Behavior on t {
+            NumberAnimation {
+                duration: root.duration
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        readonly property real normalScale: root.animateNormalAxis ? t : 1.0
+        readonly property real lengthScale: root.animateLengthAxis ? t : 1.0
+
+        transform: Scale {
+            xScale: root.horizontal ? backgroundContent.lengthScale : backgroundContent.normalScale
+            yScale: root.horizontal ? backgroundContent.normalScale : backgroundContent.lengthScale
+
+            origin.x: root.horizontal ? backgroundContent.width / 2 : (side === ActiveIndicator.Side.Left ? 0 : backgroundContent.width)
+            origin.y: root.horizontal ? (side === ActiveIndicator.Side.Top ? 0 : backgroundContent.height) : backgroundContent.height / 2
+        }
+
+        opacity: backgroundContent.t
+
+        Rectangle {
+            anchors.fill: parent
+            color: root.color
+            opacity: root.bgOpacity
+        }
+    }
 
     Item {
         id: content
@@ -49,11 +85,8 @@ Item {
             }
         }
 
-        readonly property bool animateNormal: (animationMode & ActiveIndicator.AnimationMode.GrowAlong) !== 0
-        readonly property bool animateLength: (animationMode & ActiveIndicator.AnimationMode.GrowAcross) !== 0
-
-        readonly property real normalScale: animateNormal ? t : 1.0
-        readonly property real lengthScale: animateLength ? t : 1.0
+        readonly property real normalScale: root.animateNormalAxis ? t : 1.0
+        readonly property real lengthScale: root.animateLengthAxis ? t : 1.0
 
         transform: Scale {
             id: mainScale
@@ -66,12 +99,6 @@ Item {
         }
 
         opacity: content.t
-
-        Rectangle {
-            opacity: bgActive ? root.bgOpacity : 0
-            color: root.color
-            anchors.fill: parent
-        }
 
         Rectangle {
             id: indicator

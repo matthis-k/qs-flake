@@ -102,7 +102,7 @@ Item {
                 implicitWidth: 32
                 implicitHeight: 32
                 color: overlayColor(root.sink?.audio?.volume, root.sink?.audio?.muted)
-                source: IconImage {
+                source: Icon {
                     anchors.centerIn: parent
                     implicitSize: 32
                     source: Quickshell.iconPath(volumeIcon(root.sink?.audio?.volume, root.sink?.audio?.muted), "multimedia-volume-control")
@@ -197,7 +197,7 @@ Item {
                             implicitWidth: 18
                             implicitHeight: 18
                             color: overlayColor(stream?.audio?.volume, stream?.audio?.muted)
-                            source: IconImage {
+                            source: Icon {
                                 implicitSize: 18
                                 source: Quickshell.iconPath(volumeIcon(stream?.audio?.volume, stream?.audio?.muted), "multimedia-volume-control")
                             }

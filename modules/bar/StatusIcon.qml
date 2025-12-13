@@ -9,6 +9,7 @@ import "../../modules/quickmenu"
 Icon {
     id: root
     property var quickmenuName
+    color: Config.styling.text0
 
     HoverHandler {
         onHoveredChanged: {

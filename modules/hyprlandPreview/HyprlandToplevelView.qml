@@ -6,6 +6,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Widgets
 import "../../services"
+import "../../components"
 
 Item {
     id: root
@@ -28,7 +29,7 @@ Item {
         width: screencopyView.width
         height: 32
 
-        IconImage {
+        Icon {
             id: appIcon
             property DesktopEntry entry: {
                 DesktopEntries.applications?.values;
@@ -67,7 +68,7 @@ Item {
                 id: hoverHandler
             }
 
-            IconImage {
+            Icon {
                 id: icon
                 anchors.centerIn: parent
                 anchors.fill: parent

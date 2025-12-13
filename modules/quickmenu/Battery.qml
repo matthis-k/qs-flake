@@ -6,6 +6,7 @@ import Quickshell.Widgets
 import Quickshell.Services.UPower
 
 import "../../services"
+import "../../components"
 
 Item {
     id: root
@@ -134,7 +135,7 @@ Item {
                         })[PowerProfiles.profile]
                     implicitWidth: 32
                     implicitHeight: 32
-                    source: IconImage {
+                    source: Icon {
                         source: Quickshell.iconPath(powerProfileIcon2.iconName)
                         implicitSize: 32
                     }

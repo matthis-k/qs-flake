@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Bluetooth
 import "../../services"
+import "../../components"
 
 Item {
     id: root
@@ -40,7 +41,7 @@ Item {
             Layout.preferredHeight: 32
             spacing: 10
 
-            IconImage {
+            Icon {
                 implicitWidth: 24
                 implicitHeight: 24
                 source: Quickshell.iconPath(btIconName(), "bluetooth-symbolic")
@@ -121,7 +122,7 @@ Item {
                         Layout.preferredHeight: 28
                         spacing: 8
 
-                        IconImage {
+                        Icon {
                             source: Quickshell.iconPath(modelData.icon || "bluetooth-symbolic", "bluetooth-symbolic")
                             implicitSize: 16
                         }

@@ -101,7 +101,7 @@ Item {
                     ColorOverlay {
                         anchors.fill: parent
                         color: option.optionColor
-                        source: IconImage {
+                        source: Icon {
                             anchors.fill: parent
                             implicitSize: iconSize
                             source: Quickshell.iconPath(option.icon)
