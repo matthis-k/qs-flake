@@ -30,6 +30,9 @@ PanelWindow {
     }
 
     function open() {
+        launcher.currentView = "appsearch";
+        launcher.get("appsearch").searchTerm = "";
+        launcher.remove("details");
         visible = true;
     }
 
@@ -41,7 +44,7 @@ PanelWindow {
         if (visible) {
             close();
         } else {
-            open(resume);
+            open();
         }
     }
 }

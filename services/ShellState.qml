@@ -51,15 +51,6 @@ Singleton {
 
         property AppLauncher.Window appLauncher: AppLauncher.Window {
             screen: screenState.screen
-            function open() {
-                appLauncher.visible = true;
-            }
-            function close() {
-                appLauncher.visible = false;
-            }
-            function toggle() {
-                appLauncher.visible = !appLauncher.visible;
-            }
             IpcHandler {
                 target: `applauncher-${screen.name}`
                 function open() {

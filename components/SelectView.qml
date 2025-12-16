@@ -12,6 +12,7 @@ Item {
     implicitHeight: currentItem ? currentItem.implicitHeight : 0
 
     default property alias entries: views.entries
+    property var initProps
 
     SimpleMap {
         id: views
@@ -41,7 +42,8 @@ Item {
         var item = null;
 
         if (_selectedValue instanceof Component) {
-            item = _selectedValue.createObject(root);
+            item = _selectedValue.createObject(root, initProps);
+            initProps = undefined;
             _owned = true;
         } else {
             item = _selectedValue;
