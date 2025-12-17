@@ -8,7 +8,6 @@ import "."
 
 PanelWindow {
     id: win
-    required property ShellScreen screen
     focusable: true
 
     color: "transparent"

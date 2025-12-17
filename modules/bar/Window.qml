@@ -3,7 +3,6 @@ import QtQuick
 import "../../utils"
 
 PanelWindow {
-    required property ShellScreen screen
     anchors {
         top: true
         right: true
