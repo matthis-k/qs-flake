@@ -6,6 +6,7 @@ import "../../services"
 StatusIcon {
     id: root
     property UPowerDevice bat: UPower.displayDevice
+    visible: bat.type == UPowerDeviceType.Battery && bat.isPowerSupply == true
 
     color: {
         let percentage = Math.floor(root.bat.percentage * 100);
