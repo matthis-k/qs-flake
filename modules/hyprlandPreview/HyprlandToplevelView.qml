@@ -79,7 +79,7 @@ Item {
 
             ColorOverlay {
                 anchors.fill: icon
-                color: Config.styling.close || Config.color.red
+                color: Config.styling.close || Config.colors.red
                 source: icon
                 scale: icon.scale
             }

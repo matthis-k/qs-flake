@@ -103,16 +103,16 @@ Item {
                             placeholderText: "Password"
                             echoMode: TextInput.Password
                             color: Config.styling.text0
-                            placeholderTextColor: Config.styling.bg7
-                            selectionColor: Config.styling.bg5
-                            selectedTextColor: Config.styling.text0
+                            placeholderTextColor: Config.styling.placeholderText
+                            selectionColor: Config.styling.selectionBackground
+                            selectedTextColor: Config.styling.selectionText
                             leftPadding: 4
                             rightPadding: 4
                             topPadding: 4
                             bottomPadding: 4
                             background: Rectangle {
                                 radius: 8
-                                color: Config.styling.bg2
+                                color: Config.styling.bg3
                                 border.width: pwField.activeFocus ? 2 : 1
                                 border.color: pwField.activeFocus ? Config.colors.lavender : (pwField.hovered ? Config.styling.bg7 : Config.styling.bg6)
                             }
@@ -136,7 +136,7 @@ Item {
                             }
                             background: Rectangle {
                                 radius: 8
-                                color: connectBtn.hovered ? Config.styling.bg3 : Config.styling.bg2
+                                color: connectBtn.hovered ? Config.styling.bg4 : Config.styling.bg3
                                 border.width: 1
                                 border.color: connectBtn.down ? Config.styling.primaryAccent : (connectBtn.hovered ? Config.styling.bg7 : Config.styling.bg6)
                             }

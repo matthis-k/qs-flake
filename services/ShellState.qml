@@ -8,6 +8,7 @@ import "../modules/bar" as Bar
 import "../modules/quickmenu" as Quickmenu
 import "../modules/hyprlandPreview/" as HyprlandPreview
 import "../modules/applauncher" as AppLauncher
+import "../modules/background" as Background
 import "../components" as Components
 
 Singleton {
@@ -24,6 +25,10 @@ Singleton {
 
         required property ShellScreen modelData
         readonly property ShellScreen screen: screenState.modelData
+
+        property Background.Window background: Background.Window {
+            screen: screenState.screen
+        }
 
         property Bar.Window bar: Bar.Window {
             screen: screenState.screen

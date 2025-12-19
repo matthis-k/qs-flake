@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Wayland
 import QtQuick
 import "../../utils"
 
@@ -8,6 +9,10 @@ PanelWindow {
         top: true
         right: true
         left: true
+    }
+    Component.onCompleted: {
+        if (WlrLayershell)
+            WlrLayershell.layer = WlrLayer.Top;
     }
     implicitHeight: Math.round(Pixels.mm(10, screen)) | 1
     Bar {}

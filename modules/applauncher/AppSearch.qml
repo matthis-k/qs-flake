@@ -104,13 +104,13 @@ Item {
                 placeholderText: "Search apps"
                 focus: true
                 color: Config.styling.text0
-                placeholderTextColor: Config.styling.bg7
-                selectionColor: Config.colors.sapphire
-                selectedTextColor: Config.styling.bg2
+                placeholderTextColor: Config.styling.placeholderText
+                selectionColor: Config.styling.selectionBackground
+                selectedTextColor: Config.styling.selectionText
                 font.pixelSize: height * 0.6
                 verticalAlignment: TextInput.AlignVCenter
                 background: Rectangle {
-                    color: Config.styling.bg2
+                    color: Config.styling.bg3
                     border.width: 1
                     border.color: searchInput.activeFocus ? Config.styling.primaryAccent : Config.styling.bg4
                 }

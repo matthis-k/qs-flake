@@ -91,7 +91,7 @@ Item {
                 onClicked: expanded = !expanded
                 background: Rectangle {
                     radius: 8
-                    color: Config.styling.bg2
+                    color: expandBtn.hovered ? Config.styling.bg4 : Config.styling.bg3
                     border.width: 1
                     border.color: expandBtn.down ? Config.styling.primaryAccent : (expandBtn.hovered ? Config.styling.bg7 : Config.styling.bg6)
                 }
@@ -159,7 +159,7 @@ Item {
                             }
                             background: Rectangle {
                                 radius: 8
-                                color: Config.styling.bg2
+                                color: actionBtn.hovered ? Config.styling.bg4 : Config.styling.bg3
                                 border.width: 1
                                 border.color: actionBtn.down ? Config.styling.primaryAccent : (actionBtn.hovered ? Config.styling.bg7 : Config.styling.bg6)
                             }
@@ -172,7 +172,7 @@ Item {
                             onClicked: modelData.forget()
                             background: Rectangle {
                                 radius: 8
-                                color: Config.styling.bg2
+                                color: forgetBtn.hovered ? Config.styling.bg4 : Config.styling.bg3
                                 border.width: 1
                                 border.color: forgetBtn.down ? Config.styling.primaryAccent : (forgetBtn.hovered ? Config.styling.bg7 : Config.styling.bg6)
                             }
@@ -185,7 +185,7 @@ Item {
                             onClicked: modelData.cancelPair()
                             background: Rectangle {
                                 radius: 8
-                                color: Config.styling.bg2
+                                color: cancelBtn.hovered ? Config.styling.bg4 : Config.styling.bg3
                                 border.width: 1
                                 border.color: cancelBtn.down ? Config.styling.primaryAccent : (cancelBtn.hovered ? Config.styling.bg7 : Config.styling.bg6)
                             }

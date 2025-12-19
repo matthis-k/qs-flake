@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Wayland
 import "../../services"
 import "../../components"
 import "."
@@ -22,6 +23,10 @@ PanelWindow {
         right: true
         bottom: true
         left: true
+    }
+    Component.onCompleted: {
+        if (WlrLayershell)
+            WlrLayershell.layer = WlrLayer.Overlay;
     }
 
     AppLauncher {

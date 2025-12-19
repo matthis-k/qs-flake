@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Controls
 import "../../utils"
@@ -14,6 +15,10 @@ PanelWindow {
     anchors {
         top: true
         left: true
+    }
+    Component.onCompleted: {
+        if (WlrLayershell)
+            WlrLayershell.layer = WlrLayer.Overlay;
     }
 
     implicitWidth: selectView.currentItem?.implicitWidth + 16 || 0
