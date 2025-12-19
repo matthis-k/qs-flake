@@ -9,7 +9,6 @@ import "../../services"
 
 PanelWindow {
     id: win
-    required property ShellScreen screen
     property alias view: selection.currentView
 
     anchors {
