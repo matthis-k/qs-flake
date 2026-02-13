@@ -64,24 +64,16 @@ Item {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
 
-            HoverHandler {
-                id: hoverHandler
-            }
-
             Icon {
                 id: icon
-                anchors.centerIn: parent
                 anchors.fill: parent
-
-                source: Quickshell.iconPath("window-close", "window-close")
-                scale: hoverHandler.hovered ? 1 : Config.styling.statusIconScaler
+                iconName: "window-close"
+                fallbackIconName: "window-close"
+                color: Config.styling.close || Config.colors.red
             }
 
-            ColorOverlay {
-                anchors.fill: icon
-                color: Config.styling.close || Config.colors.red
-                source: icon
-                scale: icon.scale
+            HoverScaler {
+                scaleTarget: icon
             }
 
             TapHandler {
@@ -101,6 +93,7 @@ Item {
         height: implicitHeight || root.maxViewHeight
         anchors.top: header.bottom
         anchors.horizontalCenter: parent.horizontalCenter
+        live: true
 
         TapHandler {
             onSingleTapped: {

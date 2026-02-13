@@ -8,15 +8,15 @@ Item {
 
     property string iconName: "dialog-warning"
     property string fallbackIconName: "dialog-warning"
-    property var iconPath: Quickshell.iconPath(iconName || fallbackIconName, fallbackIconName)
+    property var iconPath: Quickshell.iconPath(iconName, fallbackIconName)
     property var color: undefined
     property real implicitSize: -1
     property var source: undefined
 
     readonly property bool hasImplicitSize: implicitSize >= 0
 
-    implicitWidth: hasImplicitSize ? implicitSize : (parent ? parent.height : icon.implicitWidth)
-    implicitHeight: hasImplicitSize ? implicitSize : (parent ? parent.height : icon.implicitHeight)
+    implicitWidth: hasImplicitSize ? implicitSize : Math.max(16, parent ? parent.height : icon.implicitWidth)
+    implicitHeight: hasImplicitSize ? implicitSize : Math.max(16, parent ? parent.height : icon.implicitHeight)
 
     property alias smooth: icon.smooth
     property alias mipmap: icon.mipmap
