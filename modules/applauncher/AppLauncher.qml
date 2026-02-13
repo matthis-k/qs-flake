@@ -32,6 +32,7 @@ SelectView {
 
     function closeDetails() {
         view.currentView = "appsearch";
+        view.currentItem.searchTerm = "";
         view.currentItem.onEnter();
         view.remove("details");
         _desktopEntry = undefined;

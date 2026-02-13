@@ -45,11 +45,16 @@ Item {
         if (idx < 0 || idx >= filteredApps.length)
             return;
         const entry = filteredApps[idx];
-        if (entry && entry.execute) {
-            entry.execute();
-            if (closeHandler)
-                closeHandler();
+        if (entry.runInTerminal) {
+            Quickshell.execDetached({
+                command: ["kitty", "-e", entry.command.join(" ")]
+            });
         }
+        {
+            entry.execute();
+        }
+        if (closeHandler)
+            closeHandler();
     }
 
     onSearchTermChanged: {

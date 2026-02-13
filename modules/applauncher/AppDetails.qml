@@ -30,22 +30,10 @@ Item {
         return nameA.localeCompare(nameB);
     }) : []
     readonly property int maxSelectedIndex: Math.max(0, actionList.length)
-    readonly property var propertyRows: desktopEntry ? [
-        {
-            label: "Generic Name",
-            value: desktopEntry.genericName || ""
-        },
+    readonly property var detailsRows: [
         {
             label: "Comment",
             value: desktopEntry.comment || ""
-        },
-        {
-            label: "Executable",
-            value: desktopEntry.execString || ""
-        },
-        {
-            label: "Working Directory",
-            value: desktopEntry.workingDirectory || ""
         },
         {
             label: "Categories",
@@ -59,8 +47,7 @@ Item {
             label: "Run In Terminal",
             value: desktopEntry.runInTerminal ? "Yes" : "No"
         }
-    ].filter(row => row.value && row.value.length) : []
-    readonly property var detailsRows: propertyRows.filter(row => row.label !== "Executable")
+    ].filter(row => row.value && row.value.length)
 
     function clampSelection() {
         selectedIndex = Math.max(0, Math.min(selectedIndex, maxSelectedIndex));
@@ -138,20 +125,30 @@ Item {
                         active: root.selectedIndex === 0
                     }
 
-                    RowLayout {
+                    Item {
                         id: headerLayout
-                        anchors.fill: parent
+                        anchors.left: parent.left
+                        anchors.right: parent.right
                         anchors.leftMargin: root.pad
                         anchors.rightMargin: root.pad
-                        spacing: root.pad
+                        implicitHeight: Math.max(root.iconSize, titleColumn.implicitHeight)
+                        height: implicitHeight
 
                         Icon {
-                            implicitSize: root.iconSize
+                            id: appIcon
+                            width: root.iconSize
+                            height: root.iconSize
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
                             iconName: desktopEntry ? desktopEntry.icon : ""
                         }
 
-                        ColumnLayout {
-                            Layout.fillWidth: true
+                        Column {
+                            id: titleColumn
+                            anchors.left: appIcon.right
+                            anchors.leftMargin: root.lineGap
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
                             spacing: root.lineGap
 
                             Text {
@@ -186,6 +183,7 @@ Item {
                     }
 
                     Rectangle {
+                        width: parent.width
                         color: Config.styling.bg1 || Config.styling.bg0
                         border.width: 1
                         border.color: Config.styling.bg4
@@ -195,11 +193,11 @@ Item {
                             id: execText
                             anchors.fill: parent
                             anchors.margins: root.pad
-                            text: desktopEntry ? (desktopEntry.execString || "") : ""
+                            text: desktopEntry ? (desktopEntry.execString || desktopEntry.exec || "") : ""
                             color: Config.styling.text0
                             font.pixelSize: root.monoPx
                             font.family: "monospace"
-                            elide: Text.ElideRight
+                            wrapMode: Text.WrapAnywhere
                         }
                     }
                 }
@@ -377,12 +375,12 @@ Item {
             root.cycleSelection(-1);
             return;
         }
-        if ((ev.modifiers & Qt.ControlModifier) && ev.key === Qt.Key_N) {
+        if ((ev.modifiers & Qt.ControlModifier) && [Qt.Key_N, Qt.Key_J].includes(ev.key)) {
             ev.accepted = true;
             root.cycleSelection(+1);
             return;
         }
-        if ((ev.modifiers & Qt.ControlModifier) && ev.key === Qt.Key_P) {
+        if ((ev.modifiers & Qt.ControlModifier) && [Qt.Key_P, Qt.Key_K].includes(ev.key)) {
             ev.accepted = true;
             root.cycleSelection(-1);
             return;
