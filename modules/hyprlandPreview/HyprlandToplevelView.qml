@@ -5,8 +5,8 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Widgets
-import "../../services"
-import "../../components"
+import qs.services
+import qs.components
 
 Item {
     id: root

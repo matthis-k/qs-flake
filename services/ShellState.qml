@@ -3,13 +3,13 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
-import "../utils"
-import "../modules/bar" as Bar
-import "../modules/quickmenu" as Quickmenu
-import "../modules/hyprlandPreview/" as HyprlandPreview
-import "../modules/applauncher" as AppLauncher
-import "../modules/background" as Background
-import "../components" as Components
+import qs.utils
+import qs.modules.bar as Bar
+import qs.modules.quickmenu as Quickmenu
+import qs.modules.hyprlandPreview as HyprlandPreview
+import qs.modules.applauncher as AppLauncher
+import qs.modules.background as Background
+import qs.components as Components
 
 Singleton {
     id: root

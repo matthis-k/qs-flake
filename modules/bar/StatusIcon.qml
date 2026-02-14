@@ -2,9 +2,9 @@ import QtQuick
 import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Widgets
-import "../../services"
-import "../../components"
-import "../../modules/quickmenu"
+import qs.services
+import qs.components
+import qs.modules.quickmenu
 
 Icon {
     id: root

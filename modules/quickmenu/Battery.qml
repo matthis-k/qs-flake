@@ -5,8 +5,8 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.UPower
 
-import "../../services"
-import "../../components"
+import qs.services
+import qs.components
 
 Item {
     id: root

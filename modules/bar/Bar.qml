@@ -1,10 +1,10 @@
 import QtQuick
 import QtQuick.Layouts
-import "../../utils"
-import "../../utils/types"
-import "../../services"
-import "../../components"
-import "../../modules/quickmenu"
+import qs.utils
+import qs.utils.types
+import qs.services
+import qs.components
+import qs.modules.quickmenu
 
 Rectangle {
     id: barRoot

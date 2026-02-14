@@ -4,9 +4,9 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Wayland
 import Quickshell.Widgets
-import "../../services"
-import "../../components"
-import "../hyprlandPreview"
+import qs.services
+import qs.components
+import qs.modules.hyprlandPreview
 
 Item {
     id: root

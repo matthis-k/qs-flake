@@ -5,10 +5,10 @@ import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
-import "../../services"
-import "../../components"
+import qs.services
+import qs.components
 
-// ActiveIndicator + HoverScaler are assumed to be in ../../components or similar
+
 // (adjust imports as needed)
 
 Item {

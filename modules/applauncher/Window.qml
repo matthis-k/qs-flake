@@ -3,8 +3,8 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Wayland
-import "../../services"
-import "../../components"
+import qs.services
+import qs.components
 import "."
 
 PanelWindow {

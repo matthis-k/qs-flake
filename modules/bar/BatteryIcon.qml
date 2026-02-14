@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
-import "../../services"
+import qs.services
 
 StatusIcon {
     id: root

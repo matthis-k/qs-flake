@@ -4,8 +4,8 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Bluetooth
-import "../../services"
-import "../../components"
+import qs.services
+import qs.components
 
 Item {
     id: root

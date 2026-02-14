@@ -2,10 +2,10 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Controls
-import "../../utils"
-import "../../utils/types"
-import "../../components"
-import "../../services"
+import qs.utils
+import qs.utils.types
+import qs.components
+import qs.services
 
 PanelWindow {
     id: win

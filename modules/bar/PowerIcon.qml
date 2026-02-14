@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell
-import "../../services"
+import qs.services
 
 StatusIcon {
     iconName: "system-shutdown-symbolic"

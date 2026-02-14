@@ -1,7 +1,7 @@
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
-import "../../services"
+import qs.services
 
 PanelWindow {
     id: backgroundWindow

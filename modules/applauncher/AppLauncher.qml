@@ -2,10 +2,10 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
-import "../../components"
-import "../../services"
-import "../../utils"
-import "../../utils/types"
+import qs.components
+import qs.services
+import qs.utils
+import qs.utils.types
 import "."
 
 SelectView {

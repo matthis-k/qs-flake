@@ -1,5 +1,5 @@
 import Quickshell.Bluetooth
-import "../../services"
+import qs.services
 
 StatusIcon {
     readonly property var adapter: Bluetooth.defaultAdapter

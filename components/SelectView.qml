@@ -1,6 +1,6 @@
 import QtQuick
 import QtQml
-import "../utils/types"
+import qs.utils.types
 
 Item {
     id: root
