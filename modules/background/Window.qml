@@ -5,7 +5,6 @@ import qs.services
 
 PanelWindow {
     id: backgroundWindow
-    required property ShellScreen screen
 
     anchors {
         top: true
