@@ -15,7 +15,7 @@ PanelWindow {
 
     color: Config.styling.bg0
     focusable: false
-    visible: !!screen
+    visible: true
 
     property alias wallpaperPath: wallpaperItem.source
 
