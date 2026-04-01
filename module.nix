@@ -73,14 +73,7 @@ in
           RestartSec = 0.5;
 
           Environment = [
-            "PATH=${
-              lib.makeBinPath [
-                pkgs.networkmanager
-                pkgs.coreutils
-                pkgs.systemd
-                pkgs.gnugrep
-              ]
-            }:/run/current-system/sw/bin"
+            "PATH=%h/.nix-profile/bin:/etc/profiles/per-user/%u/bin:/run/wrappers/bin:/run/current-system/sw/bin"
             "XDG_CURRENT_DESKTOP=Hyprland"
           ];
         };
